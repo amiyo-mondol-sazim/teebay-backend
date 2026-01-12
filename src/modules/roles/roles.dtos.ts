@@ -1,4 +1,4 @@
-import { PermissionResponse } from "@/permissions/permissions.dtos";
+import type { PermissionResponse } from "@/permissions/permissions.dtos";
 
 export class RoleResponse {
   id!: number;

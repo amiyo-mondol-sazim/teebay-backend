@@ -1,5 +1,7 @@
-import { ProductsRepository } from "@/modules/products/products.repository";
 import { Entity, EntityRepositoryType, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+
+import { ProductsRepository } from "@/modules/products/products.repository";
+
 import { ERentalPeriod } from "../enums/products.enums";
 import { CustomBaseEntity } from "./custom-base.entity";
 import { User } from "./users.entity";

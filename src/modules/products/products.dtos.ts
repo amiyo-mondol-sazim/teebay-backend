@@ -2,7 +2,6 @@ import { ApiProperty, PartialType } from "@nestjs/swagger";
 
 import { IsArray, IsEnum, IsNumber, IsString, Min } from "class-validator";
 
-import { PaginatedResponse } from "@/common/dtos/pagination.dtos";
 import { ERentalPeriod } from "@/common/enums/products.enums";
 
 export class CreateProductDto {
@@ -35,39 +34,3 @@ export class CreateProductDto {
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
-
-export class ProductResponse {
-  @ApiProperty()
-  id!: number;
-
-  @ApiProperty()
-  title!: string;
-
-  @ApiProperty()
-  description!: string;
-
-  @ApiProperty()
-  categories!: string[];
-
-  @ApiProperty()
-  purchasePrice!: number;
-
-  @ApiProperty()
-  rentPrice!: number;
-
-  @ApiProperty({ enum: ERentalPeriod, enumName: "ERentalPeriod" })
-  rentalPeriod!: ERentalPeriod;
-
-  @ApiProperty()
-  viewCount!: number;
-
-  @ApiProperty()
-  createdAt!: Date;
-
-  @ApiProperty()
-  updatedAt!: Date;
-}
-
-export class ProductsListResponse extends PaginatedResponse {
-  data!: ProductResponse[];
-}

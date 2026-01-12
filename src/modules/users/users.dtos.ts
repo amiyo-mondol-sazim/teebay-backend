@@ -13,16 +13,13 @@ import {
 } from "class-validator";
 
 import { PaginatedResponse, PaginationArgsDto } from "@/common/dtos/pagination.dtos";
-import { User } from "@/common/entities/users.entity";
+import type { User } from "@/common/entities/users.entity";
 import { EUserRole } from "@/common/enums/roles.enums";
 import { EUserState } from "@/common/enums/users.enums";
-import { ITokenizedUser } from "@/modules/auth/auth.interfaces";
+import type { ITokenizedUser } from "@/modules/auth/auth.interfaces";
 
-import {
-  SelfRegisterUserProfileDto,
-  UserProfileDto,
-  UserProfileResponse,
-} from "../user-profiles/user-profiles.dtos";
+import type { UserProfileResponse } from "../user-profiles/user-profiles.dtos";
+import { SelfRegisterUserProfileDto, UserProfileDto } from "../user-profiles/user-profiles.dtos";
 
 export class RegisterUserDto implements Pick<User, "email" | "password"> {
   @IsString()

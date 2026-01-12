@@ -1,6 +1,6 @@
 import { IsEmail, IsString, MinLength } from "class-validator";
 
-import { TokenizedUser } from "@/modules/users/users.dtos";
+import type { TokenizedUser } from "@/modules/users/users.dtos";
 
 export class ForgotPasswordDto {
   @IsString()

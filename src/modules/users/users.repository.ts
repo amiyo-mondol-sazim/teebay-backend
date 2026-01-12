@@ -1,16 +1,17 @@
 import { Injectable } from "@nestjs/common";
 
-import { EntityManager, QueryOrder, wrap } from "@mikro-orm/core";
+import type { EntityManager } from "@mikro-orm/core";
+import { QueryOrder, wrap } from "@mikro-orm/core";
 
-import { Role } from "@/common/entities/roles.entity";
+import type { Role } from "@/common/entities/roles.entity";
 import { UserOAuth } from "@/common/entities/user-oauths.entity";
 import { UserProfile } from "@/common/entities/user-profiles.entity";
-import { EOAuthProvider } from "@/common/enums/shared.enums";
+import type { EOAuthProvider } from "@/common/enums/shared.enums";
 import { CustomSQLBaseRepository } from "@/common/repository/custom-sql-base.repository";
 
 import { User } from "../../common/entities/users.entity";
-import { ISignInWithGoogleParams } from "../auth/auth.interfaces";
-import {
+import type { ISignInWithGoogleParams } from "../auth/auth.interfaces";
+import type {
   UpdateUserAsSuperuserDto,
   RegisterUserDto,
   SelfRegisterUserDto,

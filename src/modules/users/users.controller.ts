@@ -20,12 +20,11 @@ import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "@/modules/auth/guards/roles.guard";
 
 import { makeTokenizedUser } from "../auth/auth.helpers";
+import type { UserResponse, SuperuserFindAllUserResponse } from "./users.dtos";
 import {
   RegisterUserDto,
   TokenizedUser,
-  UserResponse,
   UpdateUserAsSuperuserDto,
-  SuperuserFindAllUserResponse,
   SuperuserFindAllUsersParams,
 } from "./users.dtos";
 import { UsersSerializer } from "./users.serializer";

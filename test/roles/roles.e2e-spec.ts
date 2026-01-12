@@ -1,4 +1,5 @@
-import { HttpStatus, INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
+import { HttpStatus } from "@nestjs/common";
 
 import type { EntityManager, IDatabaseDriver, Connection, MikroORM } from "@mikro-orm/core";
 
@@ -12,7 +13,7 @@ import { bootstrapTestServer } from "../utils/bootstrap";
 import { truncateTables } from "../utils/db";
 import { getAccessToken } from "../utils/helpers/access-token.helpers";
 import { createUserInDb } from "../utils/helpers/create-user-in-db.helpers";
-import { THttpServer } from "../utils/types";
+import type { THttpServer } from "../utils/types";
 
 describe("RolesController (e2e)", () => {
   let app: INestApplication;

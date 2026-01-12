@@ -1,4 +1,4 @@
-import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
+import type { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.interface";
 
 const LOCAL_ALLOWED_URLS_WILDCARDS: string[] = ["http://localhost:*"];
 const DEVELOPMENT_ALLOWED_URLS_WILDCARDS: string[] = [];

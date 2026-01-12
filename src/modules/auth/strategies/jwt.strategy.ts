@@ -3,8 +3,8 @@ import { PassportStrategy } from "@nestjs/passport";
 
 import { ExtractJwt, Strategy } from "passport-jwt";
 
-import { User } from "@/common/entities/users.entity";
-import { IJwtPayload } from "@/modules/auth/auth.interfaces";
+import type { User } from "@/common/entities/users.entity";
+import type { IJwtPayload } from "@/modules/auth/auth.interfaces";
 
 import { AuthService } from "../auth.service";
 

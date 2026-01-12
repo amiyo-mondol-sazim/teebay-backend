@@ -1,7 +1,10 @@
+import { Module } from "@nestjs/common";
+
+import { MikroOrmModule } from "@mikro-orm/nestjs";
+
 import { Product } from "@/common/entities/products.entity";
 import { UsersModule } from "@/modules/users/users.module";
-import { MikroOrmModule } from "@mikro-orm/nestjs";
-import { Module } from "@nestjs/common";
+
 import { ProductsController } from "./products.controller";
 import { ProductsSerializer } from "./products.serializer";
 import { ProductsService } from "./products.service";

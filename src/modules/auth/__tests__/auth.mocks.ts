@@ -1,6 +1,6 @@
-import { User } from "@/common/entities/users.entity";
+import type { User } from "@/common/entities/users.entity";
 
-import { SignInResponse } from "../auth.dtos";
+import type { SignInResponse } from "../auth.dtos";
 
 export const MOCK_USER_ID = 1;
 export const MOCK_USER_EMAIL = "user.test@email.com";

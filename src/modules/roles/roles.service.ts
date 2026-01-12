@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
-import { Permission } from "@/common/entities/permissions.entity";
+import type { Permission } from "@/common/entities/permissions.entity";
 import { EUserRole } from "@/common/enums/roles.enums";
 import { EUserState } from "@/common/enums/users.enums";
 import { PermissionsRepository } from "@/permissions/permissions.repository";
 
 import { UserProfilesRepository } from "../user-profiles/user-profiles.repository";
-import { RolesWithUsersCount } from "./roles.dtos";
+import type { RolesWithUsersCount } from "./roles.dtos";
 import { RolesRepository } from "./roles.repository";
 
 @Injectable()

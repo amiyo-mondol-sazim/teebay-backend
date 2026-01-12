@@ -4,7 +4,7 @@ import { EntityManager } from "@mikro-orm/core";
 
 import dayjs from "dayjs";
 
-import { User } from "@/common/entities/users.entity";
+import type { User } from "@/common/entities/users.entity";
 import {
   EVerificationRequestStatus,
   EVerificationRequestType,

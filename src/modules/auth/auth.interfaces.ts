@@ -1,4 +1,4 @@
-import { EUserRole } from "@/common/enums/roles.enums";
+import type { EUserRole } from "@/common/enums/roles.enums";
 
 export interface IJwtPayload {
   sub: number;

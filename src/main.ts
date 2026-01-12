@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe, VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions } from "@nestjs/swagger";
+import type { SwaggerDocumentOptions } from "@nestjs/swagger";
+import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 import helmet from "helmet";
 import { WinstonModule } from "nest-winston";

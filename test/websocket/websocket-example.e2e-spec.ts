@@ -1,10 +1,11 @@
-import { INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
 
-import { EntityManager, IDatabaseDriver, Connection, MikroORM } from "@mikro-orm/core";
+import type { EntityManager, IDatabaseDriver, Connection, MikroORM } from "@mikro-orm/core";
 
 import { faker } from "@faker-js/faker";
-import { io, Socket } from "socket.io-client";
-import { DoneCallback } from "vitest";
+import type { Socket } from "socket.io-client";
+import { io } from "socket.io-client";
+import type { DoneCallback } from "vitest";
 
 import {
   EGatewayIncomingEvent,
@@ -16,7 +17,7 @@ import { bootstrapTestServer } from "../utils/bootstrap";
 import { truncateTables } from "../utils/db";
 import { getAccessToken } from "../utils/helpers/access-token.helpers";
 import { createUserInDb } from "../utils/helpers/create-user-in-db.helpers";
-import { THttpServer } from "../utils/types";
+import type { THttpServer } from "../utils/types";
 
 describe("Websocket Example Gateway (E2E", () => {
   let app: INestApplication;
