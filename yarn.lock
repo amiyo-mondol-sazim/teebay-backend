@@ -1350,7 +1350,7 @@
     tsconfig-paths "4.2.0"
     yargs "17.7.2"
 
-"@mikro-orm/core@6.2.9", "@mikro-orm/core@~6.2.0":
+"@mikro-orm/core@6.2.9":
   version "6.2.9"
   resolved "https://registry.yarnpkg.com/@mikro-orm/core/-/core-6.2.9.tgz#d466add0ec7d528f881dbfa0c88199a228f0a2ac"
   integrity sha512-fzeg8qNwNr0f9embDhs0L75EBC8ivIOsK1GGPXe48Ab+P0Vmv1qCskSP7/vNDsz4s1xDu0h0l6fIsv1N7j4jKQ==
@@ -1361,6 +1361,19 @@
     fs-extra "11.2.0"
     globby "11.1.0"
     mikro-orm "6.2.9"
+    reflect-metadata "0.2.2"
+
+"@mikro-orm/core@~6.6.3":
+  version "6.6.3"
+  resolved "https://registry.yarnpkg.com/@mikro-orm/core/-/core-6.6.3.tgz#ff5daad1b462f1ba7861982c03f3c60819f79bf2"
+  integrity sha512-C+7Oa/Cu96SerosTvdhi/AbjFFJ3oJWdKKbRWf1TQj4qHW4btPNTDcJjN++AKE1ptFFJy43mmIzCzAAAxrwEoQ==
+  dependencies:
+    dataloader "2.2.3"
+    dotenv "17.2.3"
+    esprima "4.0.1"
+    fs-extra "11.3.3"
+    globby "11.1.0"
+    mikro-orm "6.6.3"
     reflect-metadata "0.2.2"
 
 "@mikro-orm/knex@6.2.9":
@@ -4709,6 +4722,11 @@ dataloader@2.2.2:
   resolved "https://registry.yarnpkg.com/dataloader/-/dataloader-2.2.2.tgz#216dc509b5abe39d43a9b9d97e6e5e473dfbe3e0"
   integrity sha512-8YnDaaf7N3k/q5HnTJVuzSyLETjoZjVmHc4AeKAzOvKHEFQKcn64OKBfzHYtE9zGjctNM7V9I0MfnUVLpi7M5g==
 
+dataloader@2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/dataloader/-/dataloader-2.2.3.tgz#42d10b4913515f5b37c6acedcb4960d6ae1b1517"
+  integrity sha512-y2krtASINtPFS1rSDjacrFgn1dcUuoREVabwlOGOe4SdxenREqwjwjElAdwvbGM7kgZz9a3KVicWR7vcz8rnzA==
+
 dayjs@^1.11.10:
   version "1.11.11"
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.11.tgz#dfe0e9d54c5f8b68ccf8ca5f72ac603e7e5ed59e"
@@ -4857,6 +4875,11 @@ dotenv@16.4.5, dotenv@^16.3.0:
   version "16.4.5"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.4.5.tgz#cdd3b3b604cb327e286b4762e13502f717cb099f"
   integrity sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==
+
+dotenv@17.2.3:
+  version "17.2.3"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-17.2.3.tgz#ad995d6997f639b11065f419a22fabf567cdb9a2"
+  integrity sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==
 
 eastasianwidth@^0.2.0:
   version "0.2.0"
@@ -5486,10 +5509,19 @@ fresh@0.5.2:
   resolved "https://registry.yarnpkg.com/fresh/-/fresh-0.5.2.tgz#3d8cadd90d976569fa835ab1f8e4b23a105605a7"
   integrity sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==
 
-fs-extra@11.2.0, fs-extra@^11.0.0:
+fs-extra@11.2.0:
   version "11.2.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.2.0.tgz#e70e17dfad64232287d01929399e0ea7c86b0e5b"
   integrity sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
+fs-extra@11.3.3, fs-extra@^11.0.0:
+  version "11.3.3"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.3.3.tgz#a27da23b72524e81ac6c3815cc0179b8c74c59ee"
+  integrity sha512-VWSRii4t0AFm6ixFFmLLx1t7wS1gh+ckoa84aOeapGum0h+EZd1EhEumSB+ZdDLnEPuucsVB9oB7cxJHap6Afg==
   dependencies:
     graceful-fs "^4.2.0"
     jsonfile "^6.0.1"
@@ -6704,6 +6736,11 @@ mikro-orm@6.2.9:
   version "6.2.9"
   resolved "https://registry.yarnpkg.com/mikro-orm/-/mikro-orm-6.2.9.tgz#c126966de59e3e179f104004a3f8ecad71aac19e"
   integrity sha512-zpP8D7Lw8Q2WYwd43iFQI+5e0zPUM+vEAAyJaGE87RzSiQwchqZNPuV/H74STNJYqj8mLSvwZxFvRzrQXsCRRw==
+
+mikro-orm@6.6.3:
+  version "6.6.3"
+  resolved "https://registry.yarnpkg.com/mikro-orm/-/mikro-orm-6.6.3.tgz#e27a280a0e6e3195a4f814ebdc55a02edbbb3427"
+  integrity sha512-q+ixWxBUQNGBQNp6ncg5+5tZ8hsvzJ0yh+Qme4qgjUP5+sGA6e8iBD2QSO4EQIi1RfRUxIoQvDJs/1GTDnmdHg==
 
 mime-db@1.52.0:
   version "1.52.0"

@@ -52,7 +52,7 @@
     "@cantoo/pdf-lib": "^2.2.3",
     "@metinseylan/nestjs-opentelemetry": "^3.0.0",
     "@mikro-orm/cli": "~6.2.0",
-    "@mikro-orm/core": "~6.2.0",
+    "@mikro-orm/core": "~6.6.3",
     "@mikro-orm/migrations": "~6.2.0",
     "@mikro-orm/nestjs": "^5.2.3",
     "@mikro-orm/postgresql": "~6.2.0",
