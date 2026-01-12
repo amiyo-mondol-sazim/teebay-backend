@@ -1,45 +1,39 @@
-import { EntityManager } from "@mikro-orm/core";
+import { UsersService } from "@/modules/users/users.service";
 import { Injectable } from "@nestjs/common";
 import type { CreateProductDto, UpdateProductDto } from "./products.dtos";
 import { ProductsRepository } from "./products.repository";
+
 @Injectable()
 export class ProductsService {
   constructor(
-    private readonly entityManager: EntityManager,
     private readonly productsRepository: ProductsRepository,
+    private readonly usersService: UsersService,
   ) {}
+
   async getOneById(id: number) {
     return this.productsRepository.findOneOrFail(id, {
       populate: ["owner"],
     });
   }
+
   async getAllByOwnerId(ownerId: number, page = 1, limit = 10) {
-    const qb = this.productsRepository
-      .createQueryBuilder()
-      .where({ owner: ownerId })
-      .orderBy({ createdAt: "DESC" });
-    return this.productsRepository.retrievePaginatedRecordsByLimitAndOffset({
-      qb,
-      page,
-      limit,
-    });
+    return this.productsRepository.getAllByOwnerId(ownerId, page, limit);
   }
+
   async getAll(page = 1, limit = 10) {
-    const qb = this.productsRepository.createQueryBuilder().orderBy({ createdAt: "DESC" });
-    return this.productsRepository.retrievePaginatedRecordsByLimitAndOffset({
-      qb,
-      page,
-      limit,
-    });
+    return this.productsRepository.getAll(page, limit);
   }
+
   async createOne(dto: CreateProductDto, ownerId: number) {
-    const product = await this.productsRepository.createProducts({
+    const owner = await this.usersService.findByIdOrThrow(ownerId);
+    const product = await this.productsRepository.createOne({
       ...dto,
-      owner: ownerId as any, // Will be assigned in transaction
+      owner,
     });
-    await this.productsRepository.flush(); // Flush in SERVICE, not repository
+    await this.productsRepository.flush();
     return product;
   }
+
   async updateOne(id: number, dto: UpdateProductDto) {
     const product = await this.productsRepository.findOneOrFail(id);
     Object.assign(product, dto);
@@ -51,8 +45,7 @@ export class ProductsService {
     await this.productsRepository.remove(product).flush();
   }
   async incrementViews(id: number) {
-    const product = await this.productsRepository.findOneOrFail(id);
-    product.viewCount++;
+    const product = await this.productsRepository.incrementViews(id);
     await this.productsRepository.flush();
     return product;
   }

@@ -1,9 +1,9 @@
 import { Product } from "@/common/entities/products.entity";
-import { AbstractBaseSerializer } from "@/common/serializers/abstract-base.serializer";
 import { Injectable } from "@nestjs/common";
 import type { ProductResponse } from "./products.dtos";
+
 @Injectable()
-export class ProductsSerializer extends AbstractBaseSerializer<Product, ProductResponse> {
+export class ProductsSerializer {
   serialize(product: Product): ProductResponse {
     return {
       id: product.id,

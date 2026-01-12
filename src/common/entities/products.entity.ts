@@ -8,20 +8,28 @@ export class Product extends CustomBaseEntity {
   [EntityRepositoryType]?: ProductsRepository;
   @PrimaryKey({ autoincrement: true })
   id!: number;
+
   @Property({ fieldName: "title" })
   title!: string;
+
   @Property({ fieldName: "description", type: "text" })
   description!: string;
+
   @Property({ fieldName: "categories", type: "simple-array" })
   categories!: string[];
+
   @Property({ fieldName: "purchase_price", type: "decimal" })
   purchasePrice!: number;
+
   @Property({ fieldName: "rent_price", type: "decimal" })
   rentPrice!: number;
+
   @Property({ fieldName: "rental_period", type: "text" })
   rentalPeriod!: ERentalPeriod;
+
   @Property({ fieldName: "view_count", default: 0 })
   viewCount: number = 0;
+
   @ManyToOne(() => User, { fieldName: "owner_id" })
   owner!: User;
 }

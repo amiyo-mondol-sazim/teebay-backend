@@ -23,6 +23,7 @@ import type {
 } from "./products.dtos";
 import { ProductsSerializer } from "./products.serializer";
 import { ProductsService } from "./products.service";
+
 @UseInterceptors(ResponseTransformInterceptor)
 @UseGuards(JwtAuthGuard)
 @Controller("products")
@@ -31,11 +32,13 @@ export class ProductsController {
     private readonly productsService: ProductsService,
     private readonly productsSerializer: ProductsSerializer,
   ) {}
+
   @Get(":id")
   async getOneById(@Param("id", ParseIntPipe) id: number): Promise<ProductResponse> {
     const product = await this.productsService.getOneById(id);
     return this.productsSerializer.serialize(product);
   }
+
   @Get()
   async getAll(
     @Query("page", ParseIntPipe) page: number = 1,
@@ -44,11 +47,17 @@ export class ProductsController {
     const [products, totalCount] = await this.productsService.getAll(page, limit);
     return {
       data: products.map((p) => this.productsSerializer.serialize(p)),
-      totalCount,
-      page,
-      limit,
+      meta: {
+        totalItems: totalCount,
+        itemsPerPage: limit,
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit),
+        hasNextPage: page < Math.ceil(totalCount / limit),
+        hasPreviousPage: page > 1,
+      },
     };
   }
+
   @Get("owner/:ownerId")
   async getByOwner(
     @Param("ownerId", ParseIntPipe) ownerId: number,
@@ -58,11 +67,17 @@ export class ProductsController {
     const [products, totalCount] = await this.productsService.getAllByOwnerId(ownerId, page, limit);
     return {
       data: products.map((p) => this.productsSerializer.serialize(p)),
-      totalCount,
-      page,
-      limit,
+      meta: {
+        totalItems: totalCount,
+        itemsPerPage: limit,
+        currentPage: page,
+        totalPages: Math.ceil(totalCount / limit),
+        hasNextPage: page < Math.ceil(totalCount / limit),
+        hasPreviousPage: page > 1,
+      },
     };
   }
+
   @Post()
   async create(
     @Body() dto: CreateProductDto,
@@ -71,6 +86,7 @@ export class ProductsController {
     const product = await this.productsService.createOne(dto, currentUser.id);
     return this.productsSerializer.serialize(product);
   }
+
   @Patch(":id")
   async update(
     @Param("id", ParseIntPipe) id: number,
@@ -79,10 +95,12 @@ export class ProductsController {
     const product = await this.productsService.updateOne(id, dto);
     return this.productsSerializer.serialize(product);
   }
+
   @Delete(":id")
   async delete(@Param("id", ParseIntPipe) id: number): Promise<void> {
     await this.productsService.deleteOne(id);
   }
+
   @Post(":id/views")
   async incrementViews(@Param("id", ParseIntPipe) id: number): Promise<ProductResponse> {
     const product = await this.productsService.incrementViews(id);
