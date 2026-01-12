@@ -1,7 +1,3 @@
-import { User } from "@/common/entities/users.entity";
-import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
-import { CurrentUser } from "@/modules/auth/decorators/current-user.decorator";
-import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 import {
   Body,
   Controller,
@@ -15,12 +11,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import type {
-  CreateProductDto,
-  ProductResponse,
-  ProductsListResponse,
-  UpdateProductDto,
-} from "./products.dtos";
+
+import { User } from "@/common/entities/users.entity";
+import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
+import { CurrentUser } from "@/modules/auth/decorators/current-user.decorator";
+import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
+
+import { CreateProductDto, UpdateProductDto } from "./products.dtos";
+import type { ProductResponse, ProductsListResponse } from "./products.dtos";
+import { createPaginationMeta } from "./products.helper";
 import { ProductsSerializer } from "./products.serializer";
 import { ProductsService } from "./products.service";
 
@@ -45,16 +44,10 @@ export class ProductsController {
     @Query("limit", ParseIntPipe) limit: number = 10,
   ): Promise<ProductsListResponse> {
     const [products, totalCount] = await this.productsService.getAll(page, limit);
+    const meta = createPaginationMeta(totalCount, page, limit);
     return {
       data: products.map((p) => this.productsSerializer.serialize(p)),
-      meta: {
-        totalItems: totalCount,
-        itemsPerPage: limit,
-        currentPage: page,
-        totalPages: Math.ceil(totalCount / limit),
-        hasNextPage: page < Math.ceil(totalCount / limit),
-        hasPreviousPage: page > 1,
-      },
+      meta,
     };
   }
 
@@ -65,16 +58,10 @@ export class ProductsController {
     @Query("limit", ParseIntPipe) limit: number = 10,
   ): Promise<ProductsListResponse> {
     const [products, totalCount] = await this.productsService.getAllByOwnerId(ownerId, page, limit);
+    const meta = createPaginationMeta(totalCount, page, limit);
     return {
       data: products.map((p) => this.productsSerializer.serialize(p)),
-      meta: {
-        totalItems: totalCount,
-        itemsPerPage: limit,
-        currentPage: page,
-        totalPages: Math.ceil(totalCount / limit),
-        hasNextPage: page < Math.ceil(totalCount / limit),
-        hasPreviousPage: page > 1,
-      },
+      meta,
     };
   }
 
@@ -101,7 +88,7 @@ export class ProductsController {
     await this.productsService.deleteOne(id);
   }
 
-  @Post(":id/views")
+  @Patch(":id/views")
   async incrementViews(@Param("id", ParseIntPipe) id: number): Promise<ProductResponse> {
     const product = await this.productsService.incrementViews(id);
     return this.productsSerializer.serialize(product);

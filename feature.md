@@ -9,6 +9,7 @@ This repository implements a small marketplace-style app (“TeeBay”) where us
 ## What the project currently does
 
 ### 1) User accounts
+
 - **Register a user** with:
   - email, password, first name
   - optional last name, address, phone number
@@ -18,6 +19,7 @@ This repository implements a small marketplace-style app (“TeeBay”) where us
   - **Transactions** they have made as a customer
 
 **API surface (observed)**
+
 - Mutations:
   - `registerUser(...)`
   - `loginUser(email, password)`
@@ -25,6 +27,7 @@ This repository implements a small marketplace-style app (“TeeBay”) where us
 ---
 
 ### 2) Product listings
+
 - **Create a product listing** with:
   - title
   - categories
@@ -42,6 +45,7 @@ This repository implements a small marketplace-style app (“TeeBay”) where us
 - **Increment product view count** via a dedicated mutation.
 
 **API surface (observed)**
+
 - Queries:
   - `getProductById(id)`
   - `getProductsByUserId(ownerId)`
@@ -55,6 +59,7 @@ This repository implements a small marketplace-style app (“TeeBay”) where us
 ---
 
 ### 3) Transactions (buy / rent)
+
 - Supports recording a **transaction** between a customer and a product.
 - Transaction types:
   - `BUY`
@@ -65,11 +70,13 @@ This repository implements a small marketplace-style app (“TeeBay”) where us
   - the **customer** (a user)
 
 **API surface (observed)**
+
 - A Transaction type exists in the API and is included in the combined schema. (Specific query/mutation names for creating/fetching transactions are defined in the transaction module but were not fully visible in the sampled files.)
 
 ---
 
 ### 4) Seed/sample data (for testing)
+
 - There is an optional seed step described that creates:
   - sample users
   - sample products
@@ -80,7 +87,9 @@ This enables testing flows without manual setup.
 ---
 
 ### 5) Basic end-to-end flow supported
+
 A typical supported usage looks like:
+
 1. Register → login as a user
 2. Create one or more product listings as that user
 3. Browse products (all products / by id / by owner)
@@ -95,7 +104,9 @@ A typical supported usage looks like:
 If you want to rebuild a project with the same behavior, implement the following functional requirements:
 
 ### A) Domain model & relationships
+
 Implement these core entities and relations:
+
 - **User**
   - required: id, firstName, email, password
   - optional: lastName, address, phoneNumber
@@ -107,20 +118,24 @@ Implement these core entities and relations:
   - rental-only fields: rentTimeFrom, rentTimeTo
 
 Relationships:
+
 - User (owner) → Products (1-to-many)
 - User (customer) → Transactions (1-to-many)
 - Product → Transactions (1-to-many)
 
 Enums:
+
 - RentalPeriod: DAY/WEEK/MONTH
 - TransactionType: BUY/RENT
 
 ---
 
 ### B) API behavior (queries/mutations)
+
 Recreate the same API surface and semantics:
 
 #### User
+
 - `registerUser(...)`
   - Create user record
   - Validate uniqueness (email, optionally phone number)
@@ -130,6 +145,7 @@ Recreate the same API surface and semantics:
   - Return a login result (commonly a session token or equivalent)
 
 #### Products
+
 - `addProduct(...)`
   - Validate required fields
   - Attach to owner
@@ -147,7 +163,9 @@ Recreate the same API surface and semantics:
   - Implement consistent pagination rules (page/limit or cursor) even if the current API doesn’t expose arguments yet
 
 #### Transactions
+
 Implement mutations/queries that enable:
+
 - Creating a BUY transaction
 - Creating a RENT transaction (must include rentTimeFrom/to)
 - Fetching transactions by user and/or by product
@@ -158,13 +176,16 @@ Implement mutations/queries that enable:
 ---
 
 ### C) Validation rules & consistency fixes (important gaps)
+
 The repo contains explicit notes indicating some data consistency issues that you should address when recreating it:
 
 1. **Product required fields should not be nullable**
+
    - The UI/flows treat `title`, `categories`, `description`, `purchasePrice`, `rentPrice`, `rentalPeriod` as required inputs.
    - Ensure the stored product record enforces these requirements.
 
 2. **Transaction rental window should be conditional**
+
    - `rentTimeFrom` / `rentTimeTo` should be:
      - required for RENT
      - absent/nullable for BUY
@@ -177,7 +198,9 @@ The repo contains explicit notes indicating some data consistency issues that yo
 ---
 
 ### D) Application pages/features to replicate (behavioral)
+
 To match the current user experience implied by the API usage, implement:
+
 - Registration screen
 - Login screen
 - Product list view (browse all products)
@@ -191,5 +214,6 @@ To match the current user experience implied by the API usage, implement:
 ---
 
 ## Notes / limitations of this analysis
+
 - I only inspected a subset of files from the repository (tooling output is capped), so there may be additional features or operations not captured here.
 - You can review more code in the GitHub UI here: https://github.com/AmiyoKm/graphql_basics
