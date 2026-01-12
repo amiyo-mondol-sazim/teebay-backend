@@ -1,0 +1,712 @@
+openapi: 3.1.1
+info:
+  title: Teebay APIs
+  description: Teebay APIs
+  version: 1.0.0
+servers:
+  - url: "{base_url}"
+    variables:
+      base_url:
+        default: http://localhost:5000
+        description: Base URL for the API
+security:
+  - bearerAuth: []
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    EUserRole:
+      type: string
+      enum:
+        - SUPER_USER
+        - ADMIN
+    EUserState:
+      type: string
+      enum:
+        - UNREGISTERED
+        - ACTIVE
+        - INACTIVE
+    EVerificationRequestType:
+      type: string
+      enum:
+        - EMAIL_VERIFICATION
+        - RESET_PASSWORD
+    EVerificationRequestStatus:
+      type: string
+      enum:
+        - ACTIVE
+        - EXPIRED
+
+    Error:
+      type: object
+      properties:
+        statusCode:
+          type: number
+        message:
+          type: string
+        error:
+          type: string
+    NotFoundError:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          example: 404
+        message:
+          type: string
+        error:
+          type: string
+    ParameterMissingError:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          example: 400
+        message:
+          type: array
+          items:
+            type: string
+        error:
+          type: string
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    SignInResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        user:
+          $ref: "#/components/schemas/TokenizedUser"
+    TokenizedUser:
+      type: object
+      properties:
+        id:
+          type: number
+        claimId:
+          type: number
+        claim:
+          $ref: "#/components/schemas/EUserRole"
+        userProfileId:
+          type: number
+        email:
+          type: string
+    SelfRegisterUserDto:
+      type: object
+      required:
+        - email
+        - password
+        - userProfile
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        userProfile:
+          $ref: "#/components/schemas/SelfRegisterUserProfileDto"
+    SelfRegisterUserProfileDto:
+      type: object
+      required:
+        - firstName
+        - lastName
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 255
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 255
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        userProfile:
+          $ref: "#/components/schemas/UserProfileResponse"
+    UserProfileResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        role:
+          $ref: "#/components/schemas/RoleResponse"
+    RoleResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ForgotPasswordDto:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+    ResetPasswordDto:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          minLength: 8
+    ChangePasswordDto:
+      type: object
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+          minLength: 8
+
+    RegisterUserDto:
+      type: object
+      required:
+        - email
+        - userProfile
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        userProfile:
+          $ref: "#/components/schemas/UserProfileDto"
+    UserProfileDto:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - roleId
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 255
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 255
+        roleId:
+          type: number
+    UpdateUserAsSuperuserDto:
+      type: object
+      properties:
+        password:
+          type: string
+        state:
+          $ref: "#/components/schemas/EUserState"
+        roleId:
+          type: number
+    SuperuserFindAllUserResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SuperuserUserResponse"
+        meta:
+          type: object
+    SuperuserUserResponse:
+      allOf:
+        - $ref: "#/components/schemas/UserResponse"
+        - type: object
+          properties:
+            state:
+              $ref: "#/components/schemas/EUserState"
+
+    UpdateRolesPermissionsDto:
+      type: object
+      required:
+        - roleId
+        - permissionsToRemoveIds
+        - permissionsToAddIds
+      properties:
+        roleId:
+          type: number
+        permissionsToRemoveIds:
+          type: array
+          items:
+            type: number
+        permissionsToAddIds:
+          type: array
+          items:
+            type: number
+    RolesWithUsersAndPermissionsResponse:
+      type: object
+      properties:
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RolesWithUsersCount"
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PermissionResponse"
+    RolesWithUsersCount:
+      type: object
+      properties:
+        role:
+          $ref: "#/components/schemas/RoleResponse"
+        activeUsersCount:
+          type: number
+        inactiveUsersCount:
+          type: number
+    PermissionResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UpdateUserProfileDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 255
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 255
+
+    VerifyByTokenResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    VerificationRequestResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        token:
+          type: string
+        status:
+          $ref: "#/components/schemas/EVerificationRequestStatus"
+        type:
+          $ref: "#/components/schemas/EVerificationRequestType"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        user:
+          type: object
+          properties:
+            id:
+              type: number
+
+paths:
+  /api/v1/auth/sign-in:
+    post:
+      summary: Sign in with email and password
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignInResponse"
+        "401":
+          description: Invalid credentials
+
+  /api/v1/auth/google/sign-in:
+    post:
+      summary: Sign in with Google (OAuth flow)
+      tags: [Auth]
+      security: []
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignInResponse"
+
+  /api/v1/auth/google/token/sign-in:
+    post:
+      summary: Sign in with Google ID Token
+      tags: [Auth]
+      security: []
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignInResponse"
+
+  /api/v1/auth/sign-up:
+    post:
+      summary: Register a new user
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelfRegisterUserDto"
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+  /api/v1/auth/forgot-password:
+    post:
+      summary: Request a password reset email
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordDto"
+      responses:
+        "201":
+          description: Email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/v1/auth/reset-password/{token}:
+    post:
+      summary: Reset password using token
+      tags: [Auth]
+      security: []
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordDto"
+      responses:
+        "201":
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+  /api/v1/auth/change-password:
+    post:
+      summary: Change password for logged in user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordDto"
+      responses:
+        "201":
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+  /api/v1/users/me:
+    get:
+      summary: Get current logged in user details
+      tags: [Users]
+      responses:
+        "200":
+          description: Current user details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenizedUser"
+
+  /api/v1/users:
+    get:
+      summary: Get all users (SuperUser only)
+      tags: [Users]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+        - in: query
+          name: state
+          schema:
+            $ref: "#/components/schemas/EUserState"
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuperuserFindAllUserResponse"
+    post:
+      summary: Create a new user (SuperUser only)
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUserDto"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+  /api/v1/users/{id}:
+    patch:
+      summary: Update user (SuperUser only)
+      tags: [Users]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserAsSuperuserDto"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+  /api/v1/roles:
+    get:
+      summary: Get all roles (SuperUser only)
+      tags: [Roles]
+      responses:
+        "200":
+          description: List of roles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoleResponse"
+
+  /api/v1/roles/users-permissions:
+    get:
+      summary: Get roles with user counts and permissions (Admin/SuperUser)
+      tags: [Roles]
+      responses:
+        "200":
+          description: Roles with permissions info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RolesWithUsersAndPermissionsResponse"
+
+  /api/v1/roles/update-permissions:
+    patch:
+      summary: Update role permissions (Admin/SuperUser)
+      tags: [Roles]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRolesPermissionsDto"
+      responses:
+        "200":
+          description: Permissions updated
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /api/v1/user-profiles/me:
+    get:
+      summary: Get current user profile
+      tags: [User Profiles]
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileResponse"
+    patch:
+      summary: Update current user profile
+      tags: [User Profiles]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfileDto"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfileResponse"
+
+  /api/v1/verification-requests/verify/{token}:
+    post:
+      summary: Verify a token
+      tags: [Verification]
+      security: []
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: type
+          required: true
+          schema:
+            $ref: "#/components/schemas/EVerificationRequestType"
+      responses:
+        "200":
+          description: Verification successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyByTokenResponse"
+
+  /api/v1/verification-requests/{token}:
+    get:
+      summary: Get verification request details
+      tags: [Verification]
+      security: []
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: type
+          required: true
+          schema:
+            $ref: "#/components/schemas/EVerificationRequestType"
+      responses:
+        "200":
+          description: Verification request details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationRequestResponse"
+
+  /api/v1/health:
+    get:
+      summary: Simple health check
+      tags: [Health]
+      security: []
+      responses:
+        "200":
+          description: Service is up
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+
+  /api/v1/health/check:
+    get:
+      summary: Detailed health check
+      tags: [Health]
+      security: []
+      responses:
+        "200":
+          description: Detailed health status
+          content:
+            application/json:
+              schema:
+                type: object
