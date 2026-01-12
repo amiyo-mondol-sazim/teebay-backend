@@ -13,6 +13,7 @@ import ormConfig from "./db/db.config";
 import { AuthModule } from "./modules/auth/auth.module";
 import { EmailsModule } from "./modules/emails/emails.module";
 import { HealthModule } from "./modules/health/health.module";
+import { ProductsModule } from "./modules/products/products.module";
 import { RolesModule } from "./modules/roles/roles.module";
 import { UserProfilesModule } from "./modules/user-profiles/user-profiles.module";
 import { UsersModule } from "./modules/users/users.module";
@@ -45,6 +46,7 @@ import { PermissionsModule } from "./permissions/permissions.module";
     AuditLoggingModule,
 
     UsersModule,
+    ProductsModule,
     AuthModule,
     RolesModule,
     UserProfilesModule,
