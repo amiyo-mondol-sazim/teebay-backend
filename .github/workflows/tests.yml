@@ -5,6 +5,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  env:
+    NODE_ENV: test
+    STAGE_ENV: test
+    JWT_SECRET: secret
+    JWT_TOKEN_LIFETIME: 24h
+    SENDGRID_API_KEY: SG.xxxxx
+    ENABLE_AUDIT_LOGGING: true
+    GOOGLE_CLIENT_ID: xxxxx
+    GOOGLE_CLIENT_SECRET: xxxxx
+    WEB_CLIENT_BASE_URL: http://localhost:3000
+    SEND_FROM_EMAIL: test@example.com
   tests:
     name: Unit Tests
     runs-on: ubuntu-latest
