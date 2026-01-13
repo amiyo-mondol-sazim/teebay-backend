@@ -1,12 +1,12 @@
-name: Lint
+name: Build
 
 on:
   workflow_call:
   workflow_dispatch:
 
 jobs:
-  lint:
-    name: Lint
+  build:
+    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -14,5 +14,5 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Run linting
-        run: yarn lint
+      - name: Build project
+        run: yarn build

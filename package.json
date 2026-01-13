@@ -44,7 +44,10 @@
     "test:cov": "dotenv -e ./.env.test.local -- vitest run --coverage",
     "test:e2e": "dotenv -e ./.env.test.local -- vitest run --config ./vitest.e2e.config.mts",
     "test:bun": "dotenv -e ./.env.test.local -- bun test",
-    "test:bun:e2e": "dotenv -e ./.env.test.local -- bun test --config-file ./vitest.e2e.config.mts"
+    "test:bun:e2e": "dotenv -e ./.env.test.local -- bun test --config-file ./vitest.e2e.config.mts",
+    "pre-push": "./scripts/pre-push-check.sh",
+    "check": "yarn build && npx tsc --noEmit && npx prettier --check \"src/**/*.ts\" \"test/**/*.ts\" && yarn lint && yarn test",
+    "check:quick": "npx tsc --noEmit && yarn lint"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.685.0",
