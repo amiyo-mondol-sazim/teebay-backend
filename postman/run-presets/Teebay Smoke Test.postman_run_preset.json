@@ -1,0 +1,14 @@
+{
+  "name": "Teebay Smoke Test",
+  "collection": "postman/collections/Teebay.postman_collection.json",
+  "environment": "postman/environments/Teebay Local.postman_environment.json",
+  "iterationCount": 1,
+  "delay": 100,
+  "saveResponses": false,
+  "dataFile": null,
+  "options": {
+    "persistVariables": false,
+    "ignoreRedirects": false,
+    "insecure": false
+  }
+}

@@ -355,6 +355,92 @@ components:
             id:
               type: number
 
+    ERentalPeriod:
+      type: string
+      enum:
+        - DAY
+        - WEEK
+        - MONTH
+    CreateProductDto:
+      type: object
+      required:
+        - title
+        - description
+        - categories
+        - purchasePrice
+        - rentPrice
+        - rentalPeriod
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        purchasePrice:
+          type: number
+        rentPrice:
+          type: number
+        rentalPeriod:
+          $ref: "#/components/schemas/ERentalPeriod"
+    UpdateProductDto:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        purchasePrice:
+          type: number
+        rentPrice:
+          type: number
+        rentalPeriod:
+          $ref: "#/components/schemas/ERentalPeriod"
+    ProductResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        purchasePrice:
+          type: number
+        rentPrice:
+          type: number
+        rentalPeriod:
+          $ref: "#/components/schemas/ERentalPeriod"
+        viewCount:
+          type: number
+        owner:
+          $ref: "#/components/schemas/UserResponse"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProductsListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductResponse"
+        meta:
+          type: object
+
 paths:
   /api/v1/auth/sign-in:
     post:
@@ -683,6 +769,145 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerificationRequestResponse"
+
+  /api/v1/products:
+    get:
+      summary: Get all products
+      tags: [Products]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsListResponse"
+    post:
+      summary: Create a product
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductDto"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+
+  /api/v1/products/{id}:
+    get:
+      summary: Get one product by ID
+      tags: [Products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+    patch:
+      summary: Update a product
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductDto"
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+    delete:
+      summary: Delete a product
+      tags: [Products]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Product deleted
+
+  /api/v1/products/owner/{ownerId}:
+    get:
+      summary: Get products by owner
+      tags: [Products]
+      parameters:
+        - in: path
+          name: ownerId
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: page
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsListResponse"
+
+  /api/v1/products/{id}/views:
+    patch:
+      summary: Increment product views
+      tags: [Products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Product views incremented
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
 
   /api/v1/health:
     get:

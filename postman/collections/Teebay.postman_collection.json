@@ -1,0 +1,775 @@
+{
+  "info": {
+    "name": "Teebay",
+    "description": "Teebay APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "token",
+      "value": "sample-token-123"
+    },
+    {
+      "key": "id",
+      "value": "1"
+    },
+    {
+      "key": "page",
+      "value": "1"
+    },
+    {
+      "key": "limit",
+      "value": "10"
+    },
+    {
+      "key": "type",
+      "value": "EMAIL_VERIFICATION"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Sign In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/auth/sign-in",
+            "description": "Sign in with email and password",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "// Extract and save access token on successful sign in",
+                  "if (pm.response.code >= 200 && pm.response.code < 300) {",
+                  "    try {",
+                  "        const jsonData = pm.response.json();",
+                  "        // Handle both response shapes: data.accessToken or accessToken",
+                  "        const token = (jsonData.data && jsonData.data.accessToken) || jsonData.accessToken;",
+                  "        if (token) {",
+                  "            pm.environment.set('accessToken', token);",
+                  "            console.log('Access token saved to environment variable accessToken');",
+                  "        }",
+                  "    } catch (e) {",
+                  "        console.log('Could not parse response JSON for token extraction');",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Google Sign In (OAuth)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/v1/auth/google/sign-in",
+            "description": "Sign in with Google (OAuth flow)",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Google Token Sign In",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/v1/auth/google/token/sign-in",
+            "description": "Sign in with Google ID Token",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sign Up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"userProfile\": {\n    \"firstName\": \"John\",\n    \"lastName\": \"Doe\"\n  }\n}"
+            },
+            "url": "{{base_url}}/api/v1/auth/sign-up",
+            "description": "Register a new user",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/auth/forgot-password",
+            "description": "Request a password reset email",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/auth/reset-password/{{token}}",
+            "description": "Reset password using token",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"oldpassword123\",\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/auth/change-password",
+            "description": "Change password for logged in user"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/v1/users/me",
+            "description": "Get current logged in user details"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response body has id', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users?page={{page}}&limit={{limit}}&state=ACTIVE",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                },
+                {
+                  "key": "state",
+                  "value": "ACTIVE"
+                }
+              ]
+            },
+            "description": "Get all users (SuperUser only)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response is array or has data array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const isArray = Array.isArray(jsonData);",
+                  "    const hasDataArray = jsonData.data && Array.isArray(jsonData.data);",
+                  "    pm.expect(isArray || hasDataArray).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password123\",\n  \"userProfile\": {\n    \"firstName\": \"Jane\",\n    \"lastName\": \"Doe\",\n    \"roleId\": 1\n  }\n}"
+            },
+            "url": "{{base_url}}/api/v1/users",
+            "description": "Create a new user (SuperUser only)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response body has id', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"updatedpassword123\",\n  \"state\": \"ACTIVE\",\n  \"roleId\": 1\n}"
+            },
+            "url": "{{base_url}}/api/v1/users/{{id}}",
+            "description": "Update user (SuperUser only)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response body has id', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "User management endpoints"
+    },
+    {
+      "name": "Roles",
+      "item": [
+        {
+          "name": "Get All Roles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/v1/roles",
+            "description": "Get all roles (SuperUser only)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response is array or has data array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const isArray = Array.isArray(jsonData);",
+                  "    const hasDataArray = jsonData.data && Array.isArray(jsonData.data);",
+                  "    pm.expect(isArray || hasDataArray).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Roles with Users and Permissions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/v1/roles/users-permissions",
+            "description": "Get roles with user counts and permissions (Admin/SuperUser)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response is array or has data array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const isArray = Array.isArray(jsonData);",
+                  "    const hasDataArray = jsonData.data && Array.isArray(jsonData.data);",
+                  "    pm.expect(isArray || hasDataArray).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Role Permissions",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleId\": 1,\n  \"permissionsToRemoveIds\": [],\n  \"permissionsToAddIds\": [1, 2, 3]\n}"
+            },
+            "url": "{{base_url}}/api/v1/roles/update-permissions",
+            "description": "Update role permissions (Admin/SuperUser)"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Role management endpoints"
+    },
+    {
+      "name": "User Profiles",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/v1/user-profiles/me",
+            "description": "Get current user profile"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response body has id', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update My Profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"UpdatedFirstName\",\n  \"lastName\": \"UpdatedLastName\"\n}"
+            },
+            "url": "{{base_url}}/api/v1/user-profiles/me",
+            "description": "Update current user profile"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response body has id', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "User profile endpoints"
+    },
+    {
+      "name": "Verification",
+      "item": [
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/verification-requests/verify/{{token}}?type={{type}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "verification-requests", "verify", "{{token}}"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "{{type}}"
+                }
+              ]
+            },
+            "description": "Verify a token",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Verification Request",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/verification-requests/{{token}}?type={{type}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "verification-requests", "{{token}}"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "{{type}}"
+                }
+              ]
+            },
+            "description": "Get verification request details",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});",
+                  "",
+                  "pm.test('Response has JSON content-type', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response body has id', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Verification request endpoints"
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/v1/health",
+            "description": "Simple health check",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 2xx or 3xx', function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 399);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Health check endpoints"
+    }
+  ]
+}
