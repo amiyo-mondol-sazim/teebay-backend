@@ -17,13 +17,13 @@ export class Product extends CustomBaseEntity {
   @Property({ fieldName: "description", type: "text" })
   description!: string;
 
-  @Property({ fieldName: "categories", type: "simple-array" })
+  @Property({ fieldName: "categories", type: "text[]" })
   categories!: string[];
 
-  @Property({ fieldName: "purchase_price", type: "decimal" })
+  @Property({ fieldName: "purchase_price", type: "decimal", precision: 10, scale: 2 })
   purchasePrice!: number;
 
-  @Property({ fieldName: "rent_price", type: "decimal" })
+  @Property({ fieldName: "rent_price", type: "decimal", precision: 10, scale: 2 })
   rentPrice!: number;
 
   @Property({ fieldName: "rental_period", type: "text" })

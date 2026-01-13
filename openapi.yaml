@@ -45,32 +45,99 @@ components:
       properties:
         statusCode:
           type: number
+        errors:
+          type: array
+          items:
+            type: string
         message:
           type: string
-        error:
+      required:
+        - statusCode
+        - message
+    BadRequestError:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          example: 400
+        errors:
+          type: array
+          items:
+            type: string
+          example: []
+        message:
           type: string
+          example: Bad Request
+    UnauthorizedError:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          example: 401
+        errors:
+          type: array
+          items:
+            type: string
+          example: []
+        message:
+          type: string
+          example: Unauthorized
+    ForbiddenError:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          example: 403
+        errors:
+          type: array
+          items:
+            type: string
+          example: []
+        message:
+          type: string
+          example: Forbidden
     NotFoundError:
       type: object
       properties:
         statusCode:
           type: number
           example: 404
+        errors:
+          type: array
+          items:
+            type: string
+          example: []
         message:
           type: string
-        error:
-          type: string
-    ParameterMissingError:
+          example: Not Found
+    ConflictError:
       type: object
       properties:
         statusCode:
           type: number
-          example: 400
-        message:
+          example: 409
+        errors:
           type: array
           items:
             type: string
-        error:
+          example: []
+        message:
           type: string
+          example: Conflict
+    InternalServerError:
+      type: object
+      properties:
+        statusCode:
+          type: number
+          example: 500
+        errors:
+          type: array
+          items:
+            type: string
+          example: []
+        message:
+          type: string
+          example: Internal Server Error
 
     LoginRequest:
       type: object
@@ -460,8 +527,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SignInResponse"
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
         "401":
           description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/auth/google/sign-in:
     post:
@@ -475,6 +558,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SignInResponse"
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Google authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/auth/google/token/sign-in:
     post:
@@ -488,6 +589,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SignInResponse"
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Invalid Google token or email not verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/auth/sign-up:
     post:
@@ -507,6 +626,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad request - validation failed or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "409":
+          description: Conflict - user already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/auth/forgot-password:
     post:
@@ -529,6 +666,24 @@ paths:
                 properties:
                   message:
                     type: string
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/auth/reset-password/{token}:
     post:
@@ -554,6 +709,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad request - invalid token or expired token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "404":
+          description: User or token not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/auth/change-password:
     post:
@@ -572,6 +745,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - invalid current password or not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/users/me:
     get:
@@ -584,6 +775,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TokenizedUser"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/users:
     get:
@@ -609,6 +812,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuperuserFindAllUserResponse"
+        "400":
+          description: Bad request - invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Forbidden - insufficient permissions (SuperUser required)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
     post:
       summary: Create a new user (SuperUser only)
       tags: [Users]
@@ -625,6 +852,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad request - validation failed or user already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Forbidden - insufficient permissions (SuperUser required)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "409":
+          description: Conflict - user already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/users/{id}:
     patch:
@@ -649,6 +906,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserResponse"
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Forbidden - insufficient permissions (SuperUser required)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/roles:
     get:
@@ -663,6 +950,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/RoleResponse"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Forbidden - insufficient permissions (SuperUser required)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/roles/users-permissions:
     get:
@@ -675,6 +980,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RolesWithUsersAndPermissionsResponse"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Forbidden - insufficient permissions (Admin/SuperUser required)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/roles/update-permissions:
     patch:
@@ -693,6 +1016,36 @@ paths:
             application/json:
               schema:
                 type: object
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Forbidden - insufficient permissions (Admin/SuperUser required)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "404":
+          description: Role or permission not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/user-profiles/me:
     get:
@@ -705,6 +1058,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserProfileResponse"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "404":
+          description: User profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
     patch:
       summary: Update current user profile
       tags: [User Profiles]
@@ -721,6 +1092,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UserProfileResponse"
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "404":
+          description: User profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/verification-requests/verify/{token}:
     post:
@@ -745,6 +1140,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerifyByTokenResponse"
+        "400":
+          description: Bad request - invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "404":
+          description: Token or user not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/verification-requests/{token}:
     get:
@@ -769,6 +1182,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VerificationRequestResponse"
+        "400":
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "404":
+          description: Verification request not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/products:
     get:
@@ -790,6 +1221,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductsListResponse"
+        "400":
+          description: Bad request - invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
     post:
       summary: Create a product
       tags: [Products]
@@ -808,6 +1257,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Bad request - validation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/products/{id}:
     get:
@@ -826,6 +1293,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
     patch:
       summary: Update a product
       tags: [Products]
@@ -850,6 +1341,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Bad request - validation failed or invalid ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Forbidden - you can only update your own products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
     delete:
       summary: Delete a product
       tags: [Products]
@@ -864,6 +1385,36 @@ paths:
       responses:
         "200":
           description: Product deleted
+        "400":
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "403":
+          description: Forbidden - you can only delete your own products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/products/owner/{ownerId}:
     get:
@@ -890,6 +1441,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductsListResponse"
+        "400":
+          description: Bad request - invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "404":
+          description: Owner not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/products/{id}/views:
     patch:
@@ -908,6 +1483,30 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/health:
     get:
@@ -922,6 +1521,12 @@ paths:
               schema:
                 type: string
                 example: OK
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
 
   /api/v1/health/check:
     get:
@@ -935,3 +1540,9 @@ paths:
             application/json:
               schema:
                 type: object
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
