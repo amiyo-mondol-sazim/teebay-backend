@@ -67,6 +67,10 @@ export class ProductsService {
       throw new BadRequestException(CANNOT_UPDATE_UNAVAILABLE_PRODUCT_ERROR);
     }
 
+    if (product.status !== EProductStatus.AVAILABLE) {
+      throw new BadRequestException(CANNOT_UPDATE_UNAVAILABLE_PRODUCT_ERROR);
+    }
+
     Object.assign(product, dto);
     await this.productsRepository.getEntityManager().flush();
     return product;
@@ -79,6 +83,10 @@ export class ProductsService {
 
     if (product.owner.id !== currentUserId) {
       throw new ForbiddenException(UNAUTHORIZED_PRODUCT_DELETE_ERROR);
+    }
+
+    if (product.status !== EProductStatus.AVAILABLE) {
+      throw new BadRequestException(CANNOT_DELETE_UNAVAILABLE_PRODUCT_ERROR);
     }
 
     if (product.status !== EProductStatus.AVAILABLE) {
