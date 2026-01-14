@@ -1,8 +1,9 @@
 import { NotFoundException } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 
-import { Dictionary, ReflectMetadataProvider } from "@mikro-orm/core";
-import { IPrimaryKeyValue } from "@mikro-orm/core/typings";
+import type { Dictionary } from "@mikro-orm/core";
+import { ReflectMetadataProvider } from "@mikro-orm/core";
+import type { IPrimaryKeyValue } from "@mikro-orm/core/typings";
 import { Migrator, TSMigrationGenerator } from "@mikro-orm/migrations";
 import { defineConfig } from "@mikro-orm/postgresql";
 import { SeedManager } from "@mikro-orm/seeder";

@@ -1,15 +1,25 @@
-name: Pull Request
+name: Pull Request Checks
 
 on:
   pull_request:
 
 jobs:
-  test:
-    name: Test
-    uses: "./.github/workflows/tests.yml"
-    secrets: inherit
+  build:
+    name: Build
+    uses: "./.github/workflows/build.yml"
+
+  typecheck:
+    name: Type Check
+    uses: "./.github/workflows/typecheck.yml"
+
+  format:
+    name: Format Check
+    uses: "./.github/workflows/format.yml"
 
   lint:
     name: Lint
     uses: "./.github/workflows/lint.yml"
-    secrets: inherit
+
+  test:
+    name: Test
+    uses: "./.github/workflows/tests.yml"

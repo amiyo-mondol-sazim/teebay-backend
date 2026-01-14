@@ -3,9 +3,9 @@ import { OmitType, PartialType } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsString, MinLength, MaxLength } from "class-validator";
 
-import { UserProfile } from "@/common/entities/user-profiles.entity";
+import type { UserProfile } from "@/common/entities/user-profiles.entity";
 
-import { RoleResponse } from "../roles/roles.dtos";
+import type { RoleResponse } from "../roles/roles.dtos";
 
 export class UserProfileDto implements Pick<UserProfile, "firstName" | "lastName"> {
   @IsString()

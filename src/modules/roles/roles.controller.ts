@@ -6,11 +6,8 @@ import { ResponseTransformInterceptor } from "@/common/interceptors/response-tra
 import { Roles } from "../auth/decorators/roles.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
-import {
-  RoleResponse,
-  RolesWithUsersAndPermissionsResponse,
-  UpdateRolesPermissionsDto,
-} from "./roles.dtos";
+import type { RoleResponse, RolesWithUsersAndPermissionsResponse } from "./roles.dtos";
+import { UpdateRolesPermissionsDto } from "./roles.dtos";
 import { RolesSerializer } from "./roles.serializer";
 import { RolesService } from "./roles.service";
 

@@ -5,7 +5,8 @@ import { ResponseTransformInterceptor } from "@/common/interceptors/response-tra
 
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { UserProfileResponse, UpdateUserProfileDto } from "./user-profiles.dtos";
+import type { UserProfileResponse } from "./user-profiles.dtos";
+import { UpdateUserProfileDto } from "./user-profiles.dtos";
 import { UserProfilesSerializer } from "./user-profiles.serializer";
 import { UserProfilesService } from "./user-profiles.service";
 

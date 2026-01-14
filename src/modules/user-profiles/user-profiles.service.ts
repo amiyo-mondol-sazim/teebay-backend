@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 
 import { EntityManager } from "@mikro-orm/postgresql";
 
-import { UpdateUserProfileDto } from "./user-profiles.dtos";
+import type { UpdateUserProfileDto } from "./user-profiles.dtos";
 import { UserProfilesRepository } from "./user-profiles.repository";
 
 @Injectable()

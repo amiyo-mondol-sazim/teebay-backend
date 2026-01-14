@@ -1,4 +1,5 @@
-import { HttpStatus, INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
+import { HttpStatus } from "@nestjs/common";
 
 import type { EntityManager, IDatabaseDriver, Connection, MikroORM } from "@mikro-orm/core";
 
@@ -6,17 +7,17 @@ import { faker } from "@faker-js/faker";
 import request from "supertest";
 
 import { Role } from "@/common/entities/roles.entity";
-import { UserProfile } from "@/common/entities/user-profiles.entity";
+import type { UserProfile } from "@/common/entities/user-profiles.entity";
 import { EUserRole } from "@/common/enums/roles.enums";
 import { EUserState } from "@/common/enums/users.enums";
-import { UpdateUserAsSuperuserDto, RegisterUserDto } from "@/modules/users/users.dtos";
+import type { UpdateUserAsSuperuserDto, RegisterUserDto } from "@/modules/users/users.dtos";
 
 import { seedPermissionsData } from "../auth/auth.helpers";
 import { bootstrapTestServer } from "../utils/bootstrap";
 import { truncateTables } from "../utils/db";
 import { getAccessToken } from "../utils/helpers/access-token.helpers";
 import { createUserInDb } from "../utils/helpers/create-user-in-db.helpers";
-import { THttpServer } from "../utils/types";
+import type { THttpServer } from "../utils/types";
 
 describe("UsersController (e2e)", () => {
   let app: INestApplication;

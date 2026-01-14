@@ -1,7 +1,7 @@
 import { plainToInstance } from "class-transformer";
 import { IsIn, IsNumber, IsOptional, IsPositive, IsString, validateSync } from "class-validator";
 
-import { IEnvironmentVariables } from "../interfaces/environment-variables.interface";
+import type { IEnvironmentVariables } from "../interfaces/environment-variables.interface";
 
 class EnvironmentVariables implements IEnvironmentVariables {
   @IsString()

@@ -3,7 +3,7 @@ import { HttpStatus } from "@nestjs/common";
 import request from "supertest";
 
 import { MOCK_AUTH_EMAIL, MOCK_AUTH_PASS } from "../../auth/auth.mock";
-import { bootstrapTestServer } from "../bootstrap";
+import type { bootstrapTestServer } from "../bootstrap";
 
 export async function getAccessToken(
   httpServer: Awaited<ReturnType<typeof bootstrapTestServer>>["httpServerInstance"],

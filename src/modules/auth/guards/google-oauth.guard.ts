@@ -1,9 +1,10 @@
-import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import type { ExecutionContext } from "@nestjs/common";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 
-import { Observable } from "rxjs";
+import type { Observable } from "rxjs";
 
-import { PassportGoogleOAuthError } from "@/common/errors/passport-google-oauth.error";
+import type { PassportGoogleOAuthError } from "@/common/errors/passport-google-oauth.error";
 
 @Injectable()
 export class GoogleOAuthGuard extends AuthGuard("google") {

@@ -1,6 +1,7 @@
-import { HttpStatus, INestApplication } from "@nestjs/common";
+import type { INestApplication } from "@nestjs/common";
+import { HttpStatus } from "@nestjs/common";
 
-import { Connection, EntityManager, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
+import type { Connection, EntityManager, IDatabaseDriver, MikroORM } from "@mikro-orm/core";
 
 import { faker } from "@faker-js/faker";
 import request from "supertest";
@@ -16,7 +17,7 @@ import { bootstrapTestServer } from "../utils/bootstrap";
 import { truncateTables } from "../utils/db";
 import { VerificationRequestFactory } from "../utils/factories/verification-requests.factory";
 import { createUserInDb } from "../utils/helpers/create-user-in-db.helpers";
-import { THttpServer } from "../utils/types";
+import type { THttpServer } from "../utils/types";
 
 describe("VerificationRequestsController (e2e)", () => {
   let app: INestApplication;

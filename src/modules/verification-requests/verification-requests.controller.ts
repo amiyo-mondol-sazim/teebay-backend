@@ -13,7 +13,10 @@ import {
 import { EVerificationRequestType } from "@/common/enums/verification-requests.enums";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
 
-import { VerificationRequestResponse, VerifyByTokenResponse } from "./verification-requests.dtos";
+import type {
+  VerificationRequestResponse,
+  VerifyByTokenResponse,
+} from "./verification-requests.dtos";
 import { VerificationRequestsSerializer } from "./verification-requests.serializer";
 import { VerificationRequestsService } from "./verification-requests.service";
 

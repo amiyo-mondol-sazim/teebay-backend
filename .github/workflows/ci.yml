@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    uses: "./.github/workflows/build.yml"
+
+  typecheck:
+    name: Type Check
+    uses: "./.github/workflows/typecheck.yml"
+
+  format:
+    name: Format Check
+    uses: "./.github/workflows/format.yml"
+
+  lint:
+    name: Lint
+    uses: "./.github/workflows/lint.yml"
+
+  test:
+    name: Test
+    uses: "./.github/workflows/tests.yml"

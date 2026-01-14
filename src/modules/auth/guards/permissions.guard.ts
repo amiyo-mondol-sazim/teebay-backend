@@ -1,8 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
+import type { CanActivate, ExecutionContext } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 
-import { User } from "@/common/entities/users.entity";
-import { EPermission } from "@/common/enums/roles.enums";
+import type { User } from "@/common/entities/users.entity";
+import type { EPermission } from "@/common/enums/roles.enums";
 import { RolesService } from "@/modules/roles/roles.service";
 
 import { PERMISSIONS_KEY } from "../decorators/permissions.decorator";
