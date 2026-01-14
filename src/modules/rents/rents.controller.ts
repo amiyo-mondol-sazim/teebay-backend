@@ -17,39 +17,39 @@ import { CurrentUser } from "@/modules/auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 import { computePaginationMetadata } from "@/utils/pagination";
 
-import { DEFAULT_SALES_PAGE_SIZE } from "./sales.constants";
-import { CreateSaleDto } from "./sales.dtos";
-import { SalesSerializer } from "./sales.serializer";
-import { SalesService } from "./sales.service";
-import type { SaleResponse, SalesListResponse } from "./sales.types";
+import { DEFAULT_RENTS_PAGE_SIZE } from "./rents.constants";
+import { CreateRentDto } from "./rents.dtos";
+import { RentsSerializer } from "./rents.serializer";
+import { RentsService } from "./rents.service";
+import type { RentResponse, RentsListResponse } from "./rents.types";
 
 @ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
 @UseGuards(JwtAuthGuard)
-@Controller("sales")
-export class SalesController {
+@Controller("rents")
+export class RentsController {
   constructor(
-    private readonly salesService: SalesService,
-    private readonly salesSerializer: SalesSerializer,
+    private readonly rentsService: RentsService,
+    private readonly rentsSerializer: RentsSerializer,
   ) {}
 
-  @Post("buy")
-  async buyProduct(
-    @Body() dto: CreateSaleDto,
+  @Post()
+  async createRent(
+    @Body() dto: CreateRentDto,
     @CurrentUser() currentUser: User,
-  ): Promise<SaleResponse> {
-    const sale = await this.salesService.buyProduct(dto, currentUser.id);
-    return this.salesSerializer.serialize(sale);
+  ): Promise<RentResponse> {
+    const rent = await this.rentsService.createRent(dto, currentUser.id);
+    return this.rentsSerializer.serialize(rent);
   }
 
-  @Get("bought/:userId")
-  async getBoughtByUser(
+  @Get("borrows/:userId")
+  async getBorrowsByUser(
     @Param("userId", ParseIntPipe) userId: number,
     @CurrentUser() currentUser: User,
     @Query("page", ParseIntPipe) page: number = 1,
-    @Query("limit", ParseIntPipe) limit: number = DEFAULT_SALES_PAGE_SIZE,
-  ): Promise<SalesListResponse> {
-    const [sales, totalCount] = await this.salesService.getBoughtByUser(
+    @Query("limit", ParseIntPipe) limit: number = DEFAULT_RENTS_PAGE_SIZE,
+  ): Promise<RentsListResponse> {
+    const [rents, totalCount] = await this.rentsService.getBorrowsByUser(
       userId,
       currentUser.id,
       page,
@@ -61,19 +61,19 @@ export class SalesController {
       totalItems: totalCount,
     });
     return {
-      data: this.salesSerializer.serializeMany(sales),
+      data: this.rentsSerializer.serializeMany(rents),
       meta,
     };
   }
 
-  @Get("sold/:userId")
-  async getSoldByUser(
+  @Get("lents/:userId")
+  async getLentByUser(
     @Param("userId", ParseIntPipe) userId: number,
     @CurrentUser() currentUser: User,
     @Query("page", ParseIntPipe) page: number = 1,
-    @Query("limit", ParseIntPipe) limit: number = DEFAULT_SALES_PAGE_SIZE,
-  ): Promise<SalesListResponse> {
-    const [sales, totalCount] = await this.salesService.getSoldByUser(
+    @Query("limit", ParseIntPipe) limit: number = DEFAULT_RENTS_PAGE_SIZE,
+  ): Promise<RentsListResponse> {
+    const [rents, totalCount] = await this.rentsService.getLentByUser(
       userId,
       currentUser.id,
       page,
@@ -85,7 +85,7 @@ export class SalesController {
       totalItems: totalCount,
     });
     return {
-      data: this.salesSerializer.serializeMany(sales),
+      data: this.rentsSerializer.serializeMany(rents),
       meta,
     };
   }

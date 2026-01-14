@@ -112,6 +112,18 @@ describe("SalesService", () => {
         ForbiddenException,
       );
     });
+
+    it("should throw BadRequestException when product is rented", async () => {
+      const createDto = { productId: MOCK_PRODUCT_ID };
+      const rentedProduct = { ...MOCK_PRODUCT, status: EProductStatus.RENTED };
+
+      mockProductsService.getOneById.mockResolvedValue(rentedProduct);
+      mockSalesRepository.getEntityManager.mockReturnValue(createMockEntityManager());
+
+      await expect(service.buyProduct(createDto, MOCK_BUYER_ID)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 
   describe("getBoughtByUser", () => {

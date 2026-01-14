@@ -11,6 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -24,6 +25,7 @@ import { ProductsSerializer } from "./products.serializer";
 import { ProductsService } from "./products.service";
 import type { ProductResponse, ProductsListResponse } from "./products.types";
 
+@ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
 @UseGuards(JwtAuthGuard)
 @Controller("products")

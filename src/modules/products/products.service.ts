@@ -1,11 +1,14 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 
 import { type EntityManager, type LockMode } from "@mikro-orm/core";
 
 import { Product } from "@/common/entities/products.entity";
+import { EProductStatus } from "@/common/enums/products.enums";
 import { UsersService } from "@/modules/users/users.service";
 
 import {
+  CANNOT_DELETE_UNAVAILABLE_PRODUCT_ERROR,
+  CANNOT_UPDATE_UNAVAILABLE_PRODUCT_ERROR,
   DEFAULT_PRODUCTS_PAGE_SIZE,
   UNAUTHORIZED_PRODUCT_DELETE_ERROR,
   UNAUTHORIZED_PRODUCT_UPDATE_ERROR,
@@ -60,6 +63,10 @@ export class ProductsService {
       throw new ForbiddenException(UNAUTHORIZED_PRODUCT_UPDATE_ERROR);
     }
 
+    if (product.status !== EProductStatus.AVAILABLE) {
+      throw new BadRequestException(CANNOT_UPDATE_UNAVAILABLE_PRODUCT_ERROR);
+    }
+
     Object.assign(product, dto);
     await this.productsRepository.getEntityManager().flush();
     return product;
@@ -72,6 +79,10 @@ export class ProductsService {
 
     if (product.owner.id !== currentUserId) {
       throw new ForbiddenException(UNAUTHORIZED_PRODUCT_DELETE_ERROR);
+    }
+
+    if (product.status !== EProductStatus.AVAILABLE) {
+      throw new BadRequestException(CANNOT_DELETE_UNAVAILABLE_PRODUCT_ERROR);
     }
 
     await this.productsRepository.remove(product).getEntityManager().flush();

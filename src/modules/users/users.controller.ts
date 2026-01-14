@@ -2,14 +2,15 @@ import {
   Body,
   Controller,
   Get,
-  Patch,
-  Post,
-  UseGuards,
-  UseInterceptors,
   Param,
   ParseIntPipe,
+  Patch,
+  Post,
   Query,
+  UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { EUserRole } from "@/common/enums/roles.enums";
@@ -20,16 +21,17 @@ import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "@/modules/auth/guards/roles.guard";
 
 import { makeTokenizedUser } from "../auth/auth.helpers";
-import type { UserResponse, SuperuserFindAllUserResponse } from "./users.dtos";
+import type { SuperuserFindAllUserResponse, UserResponse } from "./users.dtos";
 import {
   RegisterUserDto,
+  SuperuserFindAllUsersParams,
   TokenizedUser,
   UpdateUserAsSuperuserDto,
-  SuperuserFindAllUsersParams,
 } from "./users.dtos";
 import { UsersSerializer } from "./users.serializer";
 import { UsersService } from "./users.service";
 
+@ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
 @UseGuards(JwtAuthGuard)
 @Controller("users")
