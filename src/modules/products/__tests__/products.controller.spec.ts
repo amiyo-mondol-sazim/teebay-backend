@@ -54,7 +54,9 @@ describe("ProductsController", () => {
         purchasePrice: MOCK_PRODUCT.purchasePrice,
         rentPrice: MOCK_PRODUCT.rentPrice,
         rentalPeriod: MOCK_PRODUCT.rentalPeriod,
+        status: MOCK_PRODUCT.status,
         viewCount: MOCK_PRODUCT.viewCount,
+        owner: MOCK_OWNER,
         createdAt: MOCK_PRODUCT.createdAt,
         updatedAt: MOCK_PRODUCT.updatedAt,
       };
@@ -80,21 +82,24 @@ describe("ProductsController", () => {
         purchasePrice: MOCK_PRODUCT.purchasePrice,
         rentPrice: MOCK_PRODUCT.rentPrice,
         rentalPeriod: MOCK_PRODUCT.rentalPeriod,
+        status: MOCK_PRODUCT.status,
         viewCount: MOCK_PRODUCT.viewCount,
         createdAt: MOCK_PRODUCT.createdAt,
         updatedAt: MOCK_PRODUCT.updatedAt,
       };
 
       mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
-      mockProductsSerializer.serialize.mockReturnValue(mockResponse);
+      mockProductsSerializer.serializeMany.mockReturnValue([mockResponse]);
 
       const result = await controller.getAll(1, 10);
 
       expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10);
+      expect(mockProductsSerializer.serializeMany).toHaveBeenCalledWith(MOCK_PRODUCT_LIST);
       expect(result.data).toHaveLength(1);
       expect(result.meta.totalItems).toBe(MOCK_TOTAL_COUNT);
       expect(result.meta.currentPage).toBe(1);
       expect(result.meta.itemsPerPage).toBe(10);
+      expect(result.data[0]).not.toHaveProperty("owner");
     });
   });
 
@@ -108,19 +113,22 @@ describe("ProductsController", () => {
         purchasePrice: MOCK_PRODUCT.purchasePrice,
         rentPrice: MOCK_PRODUCT.rentPrice,
         rentalPeriod: MOCK_PRODUCT.rentalPeriod,
+        status: MOCK_PRODUCT.status,
         viewCount: MOCK_PRODUCT.viewCount,
         createdAt: MOCK_PRODUCT.createdAt,
         updatedAt: MOCK_PRODUCT.updatedAt,
       };
 
       mockProductsService.getAllByOwnerId.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
-      mockProductsSerializer.serialize.mockReturnValue(mockResponse);
+      mockProductsSerializer.serializeMany.mockReturnValue([mockResponse]);
 
       const result = await controller.getByOwner(MOCK_OWNER_ID, 1, 10);
 
       expect(mockProductsService.getAllByOwnerId).toHaveBeenCalledWith(MOCK_OWNER_ID, 1, 10);
+      expect(mockProductsSerializer.serializeMany).toHaveBeenCalledWith(MOCK_PRODUCT_LIST);
       expect(result.data).toHaveLength(1);
       expect(result.meta.totalItems).toBe(MOCK_TOTAL_COUNT);
+      expect(result.data[0]).not.toHaveProperty("owner");
     });
   });
 
@@ -143,7 +151,9 @@ describe("ProductsController", () => {
         purchasePrice: createDto.purchasePrice,
         rentPrice: createDto.rentPrice,
         rentalPeriod: createDto.rentalPeriod,
+        status: MOCK_PRODUCT.status,
         viewCount: 0,
+        owner: MOCK_OWNER,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -172,7 +182,9 @@ describe("ProductsController", () => {
         purchasePrice: MOCK_PRODUCT.purchasePrice,
         rentPrice: MOCK_PRODUCT.rentPrice,
         rentalPeriod: MOCK_PRODUCT.rentalPeriod,
+        status: MOCK_PRODUCT.status,
         viewCount: MOCK_PRODUCT.viewCount,
+        owner: MOCK_OWNER,
         createdAt: MOCK_PRODUCT.createdAt,
         updatedAt: MOCK_PRODUCT.updatedAt,
       };
@@ -212,7 +224,9 @@ describe("ProductsController", () => {
         purchasePrice: MOCK_PRODUCT.purchasePrice,
         rentPrice: MOCK_PRODUCT.rentPrice,
         rentalPeriod: MOCK_PRODUCT.rentalPeriod,
+        status: MOCK_PRODUCT.status,
         viewCount: MOCK_PRODUCT.viewCount + 1,
+        owner: MOCK_OWNER,
         createdAt: MOCK_PRODUCT.createdAt,
         updatedAt: MOCK_PRODUCT.updatedAt,
       };

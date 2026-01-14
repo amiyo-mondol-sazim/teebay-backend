@@ -47,12 +47,6 @@
     ],
     "linebreak-style": ["warn", "unix"],
     "eol-last": ["warn", "always"],
-    "no-restricted-imports": [
-      "warn",
-      {
-        "patterns": ["../../../*", "!../*", "!../../*", "!test/**/*"]
-      }
-    ],
     "no-const-assign": "warn",
     "no-lone-blocks": "warn",
     "no-return-await": "warn",

@@ -148,8 +148,10 @@ components:
         email:
           type: string
           format: email
+          example: "user@example.com"
         password:
           type: string
+          example: "password123"
     SignInResponse:
       type: object
       properties:
@@ -180,9 +182,11 @@ components:
         email:
           type: string
           format: email
+          example: "newuser@example.com"
         password:
           type: string
           minLength: 8
+          example: "securePassword123"
         userProfile:
           $ref: "#/components/schemas/SelfRegisterUserProfileDto"
     SelfRegisterUserProfileDto:
@@ -195,10 +199,12 @@ components:
           type: string
           minLength: 2
           maxLength: 255
+          example: "John"
         lastName:
           type: string
           minLength: 2
           maxLength: 255
+          example: "Doe"
     UserResponse:
       type: object
       properties:
@@ -254,6 +260,7 @@ components:
         email:
           type: string
           format: email
+          example: "user@example.com"
     ResetPasswordDto:
       type: object
       required:
@@ -262,6 +269,7 @@ components:
         password:
           type: string
           minLength: 8
+          example: "newSecurePassword123"
     ChangePasswordDto:
       type: object
       required:
@@ -270,9 +278,11 @@ components:
       properties:
         currentPassword:
           type: string
+          example: "currentPassword123"
         newPassword:
           type: string
           minLength: 8
+          example: "newPassword456"
 
     RegisterUserDto:
       type: object
@@ -389,10 +399,12 @@ components:
           type: string
           minLength: 2
           maxLength: 255
+          example: "Jane"
         lastName:
           type: string
           minLength: 2
           maxLength: 255
+          example: "Smith"
 
     VerifyByTokenResponse:
       type: object
@@ -428,6 +440,12 @@ components:
         - DAY
         - WEEK
         - MONTH
+    EProductStatus:
+      type: string
+      enum:
+        - AVAILABLE
+        - SOLD
+        - RENTED
     CreateProductDto:
       type: object
       required:
@@ -440,35 +458,47 @@ components:
       properties:
         title:
           type: string
+          example: "iPhone 13 Pro"
         description:
           type: string
+          example: "Lightly used iPhone 13 Pro in excellent condition"
         categories:
           type: array
           items:
             type: string
+          example: ["Electronics", "Mobile Phones"]
         purchasePrice:
           type: number
+          example: 800
         rentPrice:
           type: number
+          example: 50
         rentalPeriod:
           $ref: "#/components/schemas/ERentalPeriod"
+          example: "MONTH"
     UpdateProductDto:
       type: object
       properties:
         title:
           type: string
+          example: "iPhone 13 Pro - Updated"
         description:
           type: string
+          example: "Updated description with more details"
         categories:
           type: array
           items:
             type: string
+          example: ["Electronics", "Smartphones"]
         purchasePrice:
           type: number
+          example: 750
         rentPrice:
           type: number
+          example: 45
         rentalPeriod:
           $ref: "#/components/schemas/ERentalPeriod"
+          example: "WEEK"
     ProductResponse:
       type: object
       properties:
@@ -488,10 +518,51 @@ components:
           type: number
         rentalPeriod:
           $ref: "#/components/schemas/ERentalPeriod"
+        status:
+          $ref: "#/components/schemas/EProductStatus"
         viewCount:
           type: number
         owner:
-          $ref: "#/components/schemas/UserResponse"
+          type: object
+          properties:
+            id:
+              type: number
+            userProfile:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProductListItemResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        purchasePrice:
+          type: number
+        rentPrice:
+          type: number
+        rentalPeriod:
+          $ref: "#/components/schemas/ERentalPeriod"
+        status:
+          $ref: "#/components/schemas/EProductStatus"
+        viewCount:
+          type: number
         createdAt:
           type: string
           format: date-time
@@ -504,7 +575,89 @@ components:
         data:
           type: array
           items:
-            $ref: "#/components/schemas/ProductResponse"
+            $ref: "#/components/schemas/ProductListItemResponse"
+        meta:
+          type: object
+
+    CreateSaleDto:
+      type: object
+      required:
+        - productId
+      properties:
+        productId:
+          type: number
+          example: 1
+    SaleProductResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        description:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        purchasePrice:
+          type: number
+        rentPrice:
+          type: number
+        rentalPeriod:
+          $ref: "#/components/schemas/ERentalPeriod"
+        status:
+          $ref: "#/components/schemas/EProductStatus"
+        viewCount:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    SaleUserProfileResponse:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+    SaleUserResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        email:
+          type: string
+        userProfile:
+          $ref: "#/components/schemas/SaleUserProfileResponse"
+    SaleResponse:
+      type: object
+      properties:
+        id:
+          type: number
+        price:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        product:
+          $ref: "#/components/schemas/SaleProductResponse"
+        buyer:
+          $ref: "#/components/schemas/SaleUserResponse"
+        seller:
+          $ref: "#/components/schemas/SaleUserResponse"
+    SalesListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/SaleResponse"
         meta:
           type: object
 
@@ -1276,6 +1429,98 @@ paths:
               schema:
                 $ref: "#/components/schemas/InternalServerError"
 
+  /api/v1/products/owner/{ownerId}:
+    get:
+      summary: Get products by owner
+      tags: [Products]
+      parameters:
+        - in: path
+          name: ownerId
+          required: true
+          schema:
+            type: number
+        - in: query
+          name: page
+          schema:
+            type: number
+        - in: query
+          name: limit
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductsListResponse"
+        "400":
+          description: Bad request - invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "404":
+          description: Owner not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+
+  /api/v1/products/{id}/views:
+    patch:
+      summary: Increment product views
+      tags: [Products]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Product views incremented
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+        "400":
+          description: Bad request - invalid ID format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "401":
+          description: Unauthorized - not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnauthorizedError"
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+
   /api/v1/products/{id}:
     get:
       summary: Get one product by ID
@@ -1416,13 +1661,53 @@ paths:
               schema:
                 $ref: "#/components/schemas/InternalServerError"
 
-  /api/v1/products/owner/{ownerId}:
+  /api/v1/sales/buy:
+    post:
+      summary: Purchase a product
+      tags: [Sales]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSaleDto"
+      responses:
+        "201":
+          description: Product purchased successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SaleResponse"
+        "400":
+          description: Bad request - product not available or invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        "403":
+          description: Forbidden - cannot buy your own product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ForbiddenError"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InternalServerError"
+
+  /api/v1/sales/bought/{userId}:
     get:
-      summary: Get products by owner
-      tags: [Products]
+      summary: Get products bought by a user
+      tags: [Sales]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
-          name: ownerId
+          name: userId
           required: true
           schema:
             type: number
@@ -1436,29 +1721,23 @@ paths:
             type: number
       responses:
         "200":
-          description: List of products
+          description: List of purchases
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProductsListResponse"
+                $ref: "#/components/schemas/SalesListResponse"
         "400":
-          description: Bad request - invalid parameters
+          description: Bad request - invalid query parameters
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BadRequestError"
-        "401":
-          description: Unauthorized - not authenticated
+        "403":
+          description: Forbidden - can only view your own purchases
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UnauthorizedError"
-        "404":
-          description: Owner not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotFoundError"
+                $ref: "#/components/schemas/ForbiddenError"
         "500":
           description: Internal server error
           content:
@@ -1466,41 +1745,45 @@ paths:
               schema:
                 $ref: "#/components/schemas/InternalServerError"
 
-  /api/v1/products/{id}/views:
-    patch:
-      summary: Increment product views
-      tags: [Products]
+  /api/v1/sales/sold/{userId}:
+    get:
+      summary: Get products sold by a user
+      tags: [Sales]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
-          name: id
+          name: userId
           required: true
+          schema:
+            type: number
+        - in: query
+          name: page
+          schema:
+            type: number
+        - in: query
+          name: limit
           schema:
             type: number
       responses:
         "200":
-          description: Product views incremented
+          description: List of sales
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ProductResponse"
+                $ref: "#/components/schemas/SalesListResponse"
         "400":
-          description: Bad request - invalid ID format
+          description: Bad request - invalid query parameters
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/BadRequestError"
-        "401":
-          description: Unauthorized - not authenticated
+        "403":
+          description: Forbidden - can only view your own sales
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UnauthorizedError"
-        "404":
-          description: Product not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotFoundError"
+                $ref: "#/components/schemas/ForbiddenError"
         "500":
           description: Internal server error
           content:

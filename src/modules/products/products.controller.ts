@@ -33,12 +33,6 @@ export class ProductsController {
     private readonly productsSerializer: ProductsSerializer,
   ) {}
 
-  @Get(":id")
-  async getOneById(@Param("id", ParseIntPipe) id: number): Promise<ProductResponse> {
-    const product = await this.productsService.getOneById(id);
-    return this.productsSerializer.serialize(product);
-  }
-
   @Get()
   async getAll(
     @Query("page", ParseIntPipe) page: number = 1,
@@ -51,7 +45,7 @@ export class ProductsController {
       totalItems: totalCount,
     });
     return {
-      data: products.map((p) => this.productsSerializer.serialize(p)),
+      data: this.productsSerializer.serializeMany(products),
       meta,
     };
   }
@@ -69,9 +63,15 @@ export class ProductsController {
       totalItems: totalCount,
     });
     return {
-      data: products.map((p) => this.productsSerializer.serialize(p)),
+      data: this.productsSerializer.serializeMany(products),
       meta,
     };
+  }
+
+  @Get(":id")
+  async getOneById(@Param("id", ParseIntPipe) id: number): Promise<ProductResponse> {
+    const product = await this.productsService.getOneById(id);
+    return this.productsSerializer.serialize(product);
   }
 
   @Post()
