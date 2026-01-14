@@ -1,7 +1,11 @@
 import { Injectable } from "@nestjs/common";
 
+import { raw } from "@mikro-orm/core";
+
 import { Product } from "@/common/entities/products.entity";
 import { CustomSQLBaseRepository } from "@/common/repository/custom-sql-base.repository";
+
+import { PRODUCT_NOT_FOUND_ERROR } from "./products.constants";
 
 @Injectable()
 export class ProductsRepository extends CustomSQLBaseRepository<Product> {
@@ -12,11 +16,20 @@ export class ProductsRepository extends CustomSQLBaseRepository<Product> {
     return product;
   }
 
-  async incrementViews(productId: number) {
-    const product = await this.findOneOrFail(productId);
-    product.viewCount++;
-    this.em.persist(product);
-    return product;
+  async incrementViews(productId: number): Promise<Product> {
+    const qb = this.em.createQueryBuilder(Product);
+
+    const result = await qb
+      .update({ viewCount: raw("view_count + 1") })
+      .where({ id: productId })
+      .returning("*")
+      .execute("get");
+
+    if (!result) {
+      throw new Error(PRODUCT_NOT_FOUND_ERROR);
+    }
+
+    return this.em.map(Product, result);
   }
 
   getAll(page: number, limit: number) {

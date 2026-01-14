@@ -67,9 +67,7 @@ export class ProductsService {
     await this.productsRepository.remove(product).getEntityManager().flush();
   }
 
-  async incrementViews(id: number) {
-    const product = await this.productsRepository.incrementViews(id);
-    await this.productsRepository.getEntityManager().flush();
-    return product;
+   incrementViews(id: number) {
+    return this.productsRepository.incrementViews(id);
   }
 }
