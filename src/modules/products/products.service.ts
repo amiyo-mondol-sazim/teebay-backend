@@ -40,8 +40,8 @@ export class ProductsService {
     return this.productsRepository.getAllByOwnerId(ownerId, page, limit);
   }
 
-  getAll(page = 1, limit = DEFAULT_PRODUCTS_PAGE_SIZE) {
-    return this.productsRepository.getAll(page, limit);
+  getAll(page = 1, limit = DEFAULT_PRODUCTS_PAGE_SIZE, categories?: string[]) {
+    return this.productsRepository.getAll(page, limit, categories);
   }
 
   async createOne(dto: CreateProductDto, ownerId: number) {

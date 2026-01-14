@@ -32,8 +32,13 @@ export class ProductsRepository extends CustomSQLBaseRepository<Product> {
     return this.em.map(Product, result);
   }
 
-  getAll(page: number, limit: number) {
+  getAll(page: number, limit: number, categories?: string[]) {
     const qb = this.createQueryBuilder().orderBy({ createdAt: "DESC" });
+
+    if (categories && categories.length > 0) {
+      qb.andWhere({ categories: { $overlap: categories } });
+    }
+
     return this.retrievePaginatedRecordsByLimitAndOffset({ qb, page, limit });
   }
 

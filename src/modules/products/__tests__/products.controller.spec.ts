@@ -91,15 +91,24 @@ describe("ProductsController", () => {
       mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
       mockProductsSerializer.serializeMany.mockReturnValue([mockResponse]);
 
-      const result = await controller.getAll(1, 10);
+      const result = await controller.getAll(1, 10, undefined);
 
-      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10);
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, undefined);
       expect(mockProductsSerializer.serializeMany).toHaveBeenCalledWith(MOCK_PRODUCT_LIST);
       expect(result.data).toHaveLength(1);
       expect(result.meta.totalItems).toBe(MOCK_TOTAL_COUNT);
       expect(result.meta.currentPage).toBe(1);
       expect(result.meta.itemsPerPage).toBe(10);
       expect(result.data[0]).not.toHaveProperty("owner");
+    });
+
+    it("should return products filtered by categories", async () => {
+      mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
+      mockProductsSerializer.serializeMany.mockReturnValue([]);
+
+      await controller.getAll(1, 10, "Electronics, , Gadgets");
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, ["Electronics", "Gadgets"]);
     });
   });
 

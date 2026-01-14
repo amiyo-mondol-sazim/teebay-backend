@@ -86,8 +86,17 @@ describe("ProductsService", () => {
 
       const result = await service.getAll(1, 10);
 
-      expect(mockProductsRepository.getAll).toHaveBeenCalledWith(1, 10);
+      expect(mockProductsRepository.getAll).toHaveBeenCalledWith(1, 10, undefined);
       expect(result).toEqual([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
+    });
+
+    it("should return products filtered by categories", async () => {
+      const categories = ["Electronics", "Gadgets"];
+      mockProductsRepository.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
+
+      await service.getAll(1, 10, categories);
+
+      expect(mockProductsRepository.getAll).toHaveBeenCalledWith(1, 10, categories);
     });
   });
 

@@ -11,7 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -36,11 +36,18 @@ export class ProductsController {
   ) {}
 
   @Get()
+  @ApiQuery({ name: "categories", required: false, type: String })
   async getAll(
     @Query("page", ParseIntPipe) page: number = 1,
     @Query("limit", ParseIntPipe) limit: number = DEFAULT_PRODUCTS_PAGE_SIZE,
+    @Query("categories") categoriesParam?: string,
   ): Promise<ProductsListResponse> {
-    const [products, totalCount] = await this.productsService.getAll(page, limit);
+    const categories = categoriesParam
+      ?.split(",")
+      .map((c) => c.trim())
+      .filter(Boolean);
+
+    const [products, totalCount] = await this.productsService.getAll(page, limit, categories);
     const meta = computePaginationMetadata({
       page,
       limit,
