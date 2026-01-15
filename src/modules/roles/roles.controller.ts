@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Patch, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 
 import { EUserRole } from "@/common/enums/roles.enums";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -7,8 +7,11 @@ import { ResponseTransformInterceptor } from "@/common/interceptors/response-tra
 import { Roles } from "../auth/decorators/roles.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { RolesGuard } from "../auth/guards/roles.guard";
-import type { RoleResponse, RolesWithUsersAndPermissionsResponse } from "./roles.dtos";
-import { UpdateRolesPermissionsDto } from "./roles.dtos";
+import {
+  type RoleResponse,
+  type RolesWithUsersAndPermissionsResponse,
+  UpdateRolesPermissionsDto,
+} from "./roles.dtos";
 import { RolesSerializer } from "./roles.serializer";
 import { RolesService } from "./roles.service";
 
@@ -40,6 +43,7 @@ export class RolesController {
 
   @UseGuards(RolesGuard)
   @Roles(EUserRole.ADMIN, EUserRole.SUPER_USER)
+  @ApiBody({ type: UpdateRolesPermissionsDto })
   @Patch("update-permissions")
   async updateRolesPermissions(@Body() updateRolesPermissionsDto: UpdateRolesPermissionsDto) {
     const rolesPermissions = await this.rolesService.updateRolesPermissions(

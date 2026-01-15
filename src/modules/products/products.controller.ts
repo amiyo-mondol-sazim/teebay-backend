@@ -11,7 +11,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiQuery } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -83,6 +83,7 @@ export class ProductsController {
     return this.productsSerializer.serialize(product);
   }
 
+  @ApiBody({ type: CreateProductDto })
   @Post()
   async create(
     @Body() dto: CreateProductDto,
@@ -92,6 +93,7 @@ export class ProductsController {
     return this.productsSerializer.serialize(product);
   }
 
+  @ApiBody({ type: UpdateProductDto })
   @Patch(":id")
   async update(
     @Param("id", ParseIntPipe) id: number,

@@ -9,7 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -21,7 +21,7 @@ import { DEFAULT_RENTS_PAGE_SIZE } from "./rents.constants";
 import { CreateRentDto } from "./rents.dtos";
 import { RentsSerializer } from "./rents.serializer";
 import { RentsService } from "./rents.service";
-import type { RentResponse, RentsListResponse } from "./rents.types";
+import { type RentResponse, type RentsListResponse } from "./rents.types";
 
 @ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
@@ -33,6 +33,7 @@ export class RentsController {
     private readonly rentsSerializer: RentsSerializer,
   ) {}
 
+  @ApiBody({ type: CreateRentDto })
   @Post()
   async createRent(
     @Body() dto: CreateRentDto,

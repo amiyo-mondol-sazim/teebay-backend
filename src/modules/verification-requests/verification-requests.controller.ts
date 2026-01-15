@@ -1,13 +1,13 @@
 import {
-  UseInterceptors,
   Controller,
-  Post,
-  Param,
-  ParseEnumPipe,
-  Query,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseEnumPipe,
+  Post,
+  Query,
+  UseInterceptors,
 } from "@nestjs/common";
 
 import { EVerificationRequestType } from "@/common/enums/verification-requests.enums";

@@ -9,7 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -33,6 +33,7 @@ export class SalesController {
     private readonly salesSerializer: SalesSerializer,
   ) {}
 
+  @ApiBody({ type: CreateSaleDto })
   @Post("buy")
   async buyProduct(
     @Body() dto: CreateSaleDto,

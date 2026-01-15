@@ -1,17 +1,22 @@
 import { Body, Controller, Param, Post, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { EUserRole } from "@/common/enums/roles.enums";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
 
-import type { UserResponse } from "../users/users.dtos";
-import { SelfRegisterUserDto } from "../users/users.dtos";
+import { SelfRegisterUserDto, type UserResponse } from "../users/users.dtos";
 import { UsersSerializer } from "../users/users.serializer";
 import { UsersService } from "../users/users.service";
 import { FORGOT_PASSWORD_EMAIL_SENT_MESSAGE } from "./auth.constants";
-import type { SendForgotPasswordEmailResponse, SignInResponse } from "./auth.dtos";
-import { ChangePasswordDto, ForgotPasswordDto, ResetPasswordDto } from "./auth.dtos";
+import {
+  ChangePasswordDto,
+  ForgotPasswordDto,
+  ResetPasswordDto,
+  type SendForgotPasswordEmailResponse,
+  SignInDto,
+  type SignInResponse,
+} from "./auth.dtos";
 import { makeTokenizedUser } from "./auth.helpers";
 import { type IGoogleOnlineUser } from "./auth.interfaces";
 import { AuthService } from "./auth.service";
@@ -32,6 +37,7 @@ export class AuthController {
   ) {}
 
   @UseGuards(LocalAuthGuard)
+  @ApiBody({ type: SignInDto })
   @Post("sign-in")
   async signIn(@CurrentUser() user: User): Promise<SignInResponse> {
     const accessToken = await this.authService.createAccessToken(user);
@@ -76,6 +82,7 @@ export class AuthController {
     };
   }
 
+  @ApiBody({ type: SelfRegisterUserDto })
   @Post("sign-up")
   async signUp(@Body() selfRegisterUserDto: SelfRegisterUserDto): Promise<UserResponse> {
     const newUser = await this.usersService.selfRegister(selfRegisterUserDto);
@@ -83,6 +90,7 @@ export class AuthController {
     return this.usersSerializer.serialize(newUser);
   }
 
+  @ApiBody({ type: ForgotPasswordDto })
   @Post("forgot-password")
   async sendForgotPasswordEmail(
     @Body() forgotPasswordDto: ForgotPasswordDto,
@@ -92,6 +100,7 @@ export class AuthController {
     return { message: FORGOT_PASSWORD_EMAIL_SENT_MESSAGE };
   }
 
+  @ApiBody({ type: ResetPasswordDto })
   @Post("reset-password/:token")
   async resetPasswordByToken(
     @Param("token") token: string,
@@ -102,6 +111,7 @@ export class AuthController {
     return this.usersSerializer.serialize<User, UserResponse>(user);
   }
 
+  @ApiBody({ type: ChangePasswordDto })
   @UseGuards(JwtAuthGuard)
   @Post("change-password")
   async changePassword(@CurrentUser() user: User, @Body() changePasswordDto: ChangePasswordDto) {

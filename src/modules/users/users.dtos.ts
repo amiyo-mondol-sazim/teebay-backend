@@ -1,4 +1,4 @@
-import { OmitType, PartialType, PickType, ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, OmitType, PartialType, PickType } from "@nestjs/swagger";
 
 import { Type } from "class-transformer";
 import {
@@ -18,19 +18,25 @@ import { EUserRole } from "@/common/enums/roles.enums";
 import { EUserState } from "@/common/enums/users.enums";
 import type { ITokenizedUser } from "@/modules/auth/auth.interfaces";
 
-import type { UserProfileResponse } from "../user-profiles/user-profiles.dtos";
-import { SelfRegisterUserProfileDto, UserProfileDto } from "../user-profiles/user-profiles.dtos";
+import {
+  SelfRegisterUserProfileDto,
+  UserProfileDto,
+  UserProfileResponse,
+} from "../user-profiles/user-profiles.dtos";
 
 export class RegisterUserDto implements Pick<User, "email" | "password"> {
+  @ApiProperty({ example: "user@example.com" })
   @IsString()
   @IsEmail()
   email!: string;
 
+  @ApiProperty({ example: "password123", required: false })
   @IsOptional()
   @IsString()
   @MinLength(8)
   password: string = process.env.DEFAULT_PASSWORD as string;
 
+  @ApiProperty({ type: () => UserProfileDto })
   @IsObject()
   @ValidateNested()
   @Type(() => UserProfileDto)
@@ -49,11 +55,12 @@ export class UpdateUserDto extends PickType(PartialType(RegisterUserDto), ["pass
 export class UpdateUserAsSuperuserDto extends UpdateUserDto {
   @IsOptional()
   @IsEnum(EUserState)
-  @ApiProperty({ enum: EUserState, enumName: "EUserState" })
+  @ApiProperty({ enum: EUserState, enumName: "EUserState", example: EUserState.ACTIVE })
   state?: EUserState;
 
   @IsOptional()
   @IsNumber()
+  @ApiProperty({ example: 1 })
   roleId?: number;
 }
 
@@ -65,10 +72,19 @@ export class SuperuserFindAllUsersParams extends PaginationArgsDto {
 }
 
 export class UserResponse {
+  @ApiProperty({ example: 1 })
   id!: number;
+
+  @ApiProperty({ example: "user@example.com" })
   email!: string;
+
+  @ApiProperty({ example: "2024-01-15T12:00:00Z" })
   createdAt!: Date;
+
+  @ApiProperty({ example: "2024-01-15T12:00:00Z" })
   updatedAt!: Date;
+
+  @ApiProperty({ type: () => UserProfileResponse })
   userProfile!: UserProfileResponse;
 }
 
@@ -78,15 +94,19 @@ export class SuperuserUserResponse extends UserResponse {
 }
 
 export class TokenizedUser implements ITokenizedUser {
+  @ApiProperty({ example: 1 })
   id!: number;
 
+  @ApiProperty({ example: 1 })
   claimId!: number;
 
-  @ApiProperty({ enum: EUserRole, enumName: "EUserRole" })
+  @ApiProperty({ enum: EUserRole, enumName: "EUserRole", example: EUserRole.ADMIN })
   claim!: EUserRole;
 
+  @ApiProperty({ example: 1 })
   userProfileId!: number;
 
+  @ApiProperty({ example: "user@example.com" })
   email!: string;
 }
 

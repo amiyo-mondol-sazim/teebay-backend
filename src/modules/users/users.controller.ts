@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { EUserRole } from "@/common/enums/roles.enums";
@@ -21,12 +21,13 @@ import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 import { RolesGuard } from "@/modules/auth/guards/roles.guard";
 
 import { makeTokenizedUser } from "../auth/auth.helpers";
-import type { SuperuserFindAllUserResponse, UserResponse } from "./users.dtos";
 import {
   RegisterUserDto,
+  type SuperuserFindAllUserResponse,
   SuperuserFindAllUsersParams,
-  TokenizedUser,
+  type TokenizedUser,
   UpdateUserAsSuperuserDto,
+  type UserResponse,
 } from "./users.dtos";
 import { UsersSerializer } from "./users.serializer";
 import { UsersService } from "./users.service";
@@ -49,6 +50,7 @@ export class UsersController {
   @Post()
   @UseGuards(RolesGuard)
   @Roles(EUserRole.SUPER_USER)
+  @ApiBody({ type: RegisterUserDto })
   async createUser(@Body() registerUserDto: RegisterUserDto): Promise<UserResponse> {
     const newUser = await this.usersService.createOne(registerUserDto);
     return this.usersSerializer.serialize(newUser);
@@ -57,6 +59,7 @@ export class UsersController {
   @Patch(":id")
   @UseGuards(RolesGuard)
   @Roles(EUserRole.SUPER_USER)
+  @ApiBody({ type: UpdateUserAsSuperuserDto })
   async updateUser(
     @Param("id", ParseIntPipe) userId: number,
     @Body() updateUserAsSuperuserDto: UpdateUserAsSuperuserDto,

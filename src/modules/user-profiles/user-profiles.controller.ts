@@ -1,13 +1,12 @@
 import { Body, Controller, Get, Patch, UseGuards, UseInterceptors } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
 
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import type { UserProfileResponse } from "./user-profiles.dtos";
-import { UpdateUserProfileDto } from "./user-profiles.dtos";
+import { UpdateUserProfileDto, type UserProfileResponse } from "./user-profiles.dtos";
 import { UserProfilesSerializer } from "./user-profiles.serializer";
 import { UserProfilesService } from "./user-profiles.service";
 
@@ -28,6 +27,7 @@ export class UserProfilesController {
     return this.userProfilesSerializer.serialize(userProfile);
   }
 
+  @ApiBody({ type: UpdateUserProfileDto })
   @Patch("me")
   async updateUserProfile(
     @CurrentUser() user: User,
