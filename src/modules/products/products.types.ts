@@ -44,5 +44,6 @@ export class ProductResponse {
 }
 
 export class ProductsListResponse extends PaginatedResponse {
+  @ApiProperty({ type: () => [ProductResponse] })
   data!: ProductResponse[];
 }
