@@ -1,7 +1,5 @@
 import { Logger, ValidationPipe, VersioningType } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
-import type { SwaggerDocumentOptions } from "@nestjs/swagger";
-import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 
 import helmet from "helmet";
 import { WinstonModule } from "nest-winston";
@@ -11,6 +9,7 @@ import { AuditLoggingSubscriber } from "./common/audit-logging/audit-logging.sub
 import { getAllowedMethods, getCorsConfig } from "./common/config/cors.config";
 import { CustomBaseExceptionFilter } from "./common/filters/custom-base-exception.filter";
 import { AuditLoggingSubscriberCreatorInterceptor } from "./common/interceptors/audit-logging-subscriber-creator.interceptor";
+import { setupSwagger } from "./common/swagger/swagger.helper";
 import getWinstonLoggerTransports from "./utils/logger";
 
 async function bootstrap() {
@@ -44,18 +43,7 @@ async function bootstrap() {
   app.use(helmet());
 
   if (process.env.STAGE_ENV === "local") {
-    const swaggerConfig = new DocumentBuilder()
-      .setTitle("Project API")
-      .setDescription("The BE API for Project")
-      .setVersion("1.0")
-      .addBearerAuth()
-      .build();
-    const documentOptions: SwaggerDocumentOptions = {
-      ignoreGlobalPrefix: true,
-      operationIdFactory: (_: string, methodKey: string) => methodKey,
-    };
-    const document = SwaggerModule.createDocument(app, swaggerConfig, documentOptions);
-    SwaggerModule.setup("swagger", app, document);
+    setupSwagger(app);
   }
 
   app.enableShutdownHooks();
