@@ -25,7 +25,6 @@ import {
   MOCK_TOTAL_COUNT,
 } from "./sales.mocks";
 
-
 vi.mock("../sales.helper", () => ({
   acquireLock: vi.fn(),
 }));

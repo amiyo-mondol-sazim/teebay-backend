@@ -7,7 +7,6 @@ import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
 
-
 import {
   CANNOT_BUY_OWN_PRODUCT_ERROR,
   DEFAULT_SALES_PAGE_SIZE,
