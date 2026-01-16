@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 
-import { type EntityManager, type LockMode } from "@mikro-orm/core";
+import { type EntityManager } from "@mikro-orm/core";
 
 import { Product } from "@/common/entities/products.entity";
 import { EProductStatus } from "@/common/enums/products.enums";
@@ -29,11 +29,8 @@ export class ProductsService {
     });
   }
 
-  getOneByIdWithLock(id: number, em: EntityManager, lockMode: LockMode) {
-    return em.findOneOrFail(Product, id, {
-      populate: ["owner"],
-      lockMode,
-    });
+  getOneByIdWithLock(id: number, em: EntityManager) {
+    return em.findOneOrFail(Product, id);
   }
 
   getAllByOwnerId(ownerId: number, page = 1, limit = DEFAULT_PRODUCTS_PAGE_SIZE) {

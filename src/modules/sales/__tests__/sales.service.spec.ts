@@ -19,9 +19,16 @@ import {
   MOCK_PRODUCT_ID,
   MOCK_SALE,
   MOCK_SALE_LIST,
+  MOCK_SELLER,
   MOCK_SELLER_ID,
   MOCK_TOTAL_COUNT,
 } from "./sales.mocks";
+
+import { acquireLock } from "../sales.helper";
+
+vi.mock("../sales.helper", () => ({
+  acquireLock: vi.fn(),
+}));
 
 const createMockEntityManager = (): EntityManager => {
   const mockEm = {
@@ -29,6 +36,7 @@ const createMockEntityManager = (): EntityManager => {
     populate: vi.fn().mockResolvedValue(undefined),
     persist: vi.fn().mockReturnThis(),
     transactional: vi.fn().mockImplementation((callback) => callback(mockEm)),
+    execute: vi.fn().mockResolvedValue([{ pg_try_advisory_xact_lock: true }]),
   } as unknown as EntityManager;
   return mockEm;
 };
@@ -39,6 +47,7 @@ describe("SalesService", () => {
   const mockSalesRepository = mockDeep<SalesRepository>({ funcPropSupport: true });
   const mockProductsService = mockDeep<ProductsService>({ funcPropSupport: true });
   const mockUsersService = mockDeep<UsersService>({ funcPropSupport: true });
+  const mockAcquireLock = vi.mocked(acquireLock);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -70,15 +79,19 @@ describe("SalesService", () => {
   describe("buyProduct", () => {
     it("should create a sale when product is available and buyer is not owner", async () => {
       const createDto = { productId: MOCK_PRODUCT_ID };
+      const mockTx = createMockEntityManager();
 
+      mockAcquireLock.mockResolvedValue(true);
       mockProductsService.getOneByIdWithLock.mockResolvedValue(MOCK_PRODUCT);
       mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_BUYER);
       mockSalesRepository.createOne.mockReturnValue(MOCK_SALE);
-      mockSalesRepository.getEntityManager.mockReturnValue(createMockEntityManager());
+      mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
 
       const result = await service.buyProduct(createDto, MOCK_BUYER_ID);
 
-      expect(mockProductsService.getOneByIdWithLock).toHaveBeenCalled();
+      expect(mockAcquireLock).toHaveBeenCalledWith(MOCK_PRODUCT_ID, mockTx);
+      expect(mockProductsService.getOneByIdWithLock).toHaveBeenCalledWith(MOCK_PRODUCT_ID, mockTx);
+      expect(mockTx.populate).toHaveBeenCalledWith(MOCK_PRODUCT.owner, ["userProfile"]);
       expect(mockUsersService.findByIdOrThrow).toHaveBeenCalledWith(MOCK_BUYER_ID);
       expect(mockSalesRepository.createOne).toHaveBeenCalledWith({
         product: MOCK_PRODUCT,
@@ -86,16 +99,21 @@ describe("SalesService", () => {
         seller: MOCK_PRODUCT.owner,
         price: MOCK_PRODUCT.purchasePrice,
       });
-      expect(result).toEqual(MOCK_SALE);
+      expect(mockTx.persist).toHaveBeenCalledWith(MOCK_SALE);
+      expect(mockTx.flush).toHaveBeenCalled();
       expect(MOCK_PRODUCT.status).toBe(EProductStatus.SOLD);
+      expect(result).toEqual(MOCK_SALE);
     });
 
     it("should throw BadRequestException when product is not available", async () => {
       const createDto = { productId: MOCK_PRODUCT_ID };
       const soldProduct = { ...MOCK_PRODUCT, status: EProductStatus.SOLD };
+      const mockTx = createMockEntityManager();
 
+      mockAcquireLock.mockResolvedValue(true);
       mockProductsService.getOneByIdWithLock.mockResolvedValue(soldProduct);
-      mockSalesRepository.getEntityManager.mockReturnValue(createMockEntityManager());
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_BUYER);
+      mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
 
       await expect(service.buyProduct(createDto, MOCK_BUYER_ID)).rejects.toThrow(
         BadRequestException,
@@ -104,9 +122,12 @@ describe("SalesService", () => {
 
     it("should throw ForbiddenException when buyer tries to buy own product", async () => {
       const createDto = { productId: MOCK_PRODUCT_ID };
+      const mockTx = createMockEntityManager();
 
+      mockAcquireLock.mockResolvedValue(true);
       mockProductsService.getOneByIdWithLock.mockResolvedValue(MOCK_PRODUCT);
-      mockSalesRepository.getEntityManager.mockReturnValue(createMockEntityManager());
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_SELLER as any);
+      mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
 
       await expect(service.buyProduct(createDto, MOCK_SELLER_ID)).rejects.toThrow(
         ForbiddenException,
@@ -116,9 +137,12 @@ describe("SalesService", () => {
     it("should throw BadRequestException when product is rented", async () => {
       const createDto = { productId: MOCK_PRODUCT_ID };
       const rentedProduct = { ...MOCK_PRODUCT, status: EProductStatus.RENTED };
+      const mockTx = createMockEntityManager();
 
+      mockAcquireLock.mockResolvedValue(true);
       mockProductsService.getOneByIdWithLock.mockResolvedValue(rentedProduct);
-      mockSalesRepository.getEntityManager.mockReturnValue(createMockEntityManager());
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_BUYER);
+      mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
 
       await expect(service.buyProduct(createDto, MOCK_BUYER_ID)).rejects.toThrow(
         BadRequestException,

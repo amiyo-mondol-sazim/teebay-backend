@@ -1,11 +1,12 @@
 import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 
-import { LockMode } from "@mikro-orm/core";
+import { EntityManager } from "@mikro-orm/postgresql";
 
-import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
 
+import { Sale } from "@/common/entities/sales.entity";
+import { EProductStatus } from "@/common/enums/products.enums";
 import {
   CANNOT_BUY_OWN_PRODUCT_ERROR,
   DEFAULT_SALES_PAGE_SIZE,
@@ -13,6 +14,7 @@ import {
   UNAUTHORIZED_SALES_VIEW_ERROR,
 } from "./sales.constants";
 import type { CreateSaleDto } from "./sales.dtos";
+import { acquireLock } from "./sales.helper";
 import { SalesRepository } from "./sales.repository";
 
 @Injectable()
@@ -27,38 +29,47 @@ export class SalesService {
     const em = this.salesRepository.getEntityManager();
 
     return em.transactional(async (tx) => {
-      const product = await this.productsService.getOneByIdWithLock(
-        dto.productId,
-        tx,
-        LockMode.PESSIMISTIC_WRITE,
-      );
-
-      await tx.populate(product.owner, ["userProfile"]);
-
-      if (product.status !== EProductStatus.AVAILABLE) {
-        throw new BadRequestException(PRODUCT_NOT_AVAILABLE_ERROR);
-      }
-
-      if (product.owner.id === buyerId) {
-        throw new ForbiddenException(CANNOT_BUY_OWN_PRODUCT_ERROR);
-      }
-
-      const buyer = await this.usersService.findByIdOrThrow(buyerId);
-
-      const sale = this.salesRepository.createOne({
-        product,
-        buyer,
-        seller: product.owner,
-        price: product.purchasePrice,
-      });
-
-      product.status = EProductStatus.SOLD;
-
-      tx.persist(sale);
-      await tx.flush();
-
-      return sale;
+      const product = await this.executePurchase(dto.productId, buyerId, tx);
+      return product;
     });
+  }
+
+  private async executePurchase(
+    productId: number,
+    buyerId: number,
+    tx: EntityManager,
+  ): Promise<Sale> {
+    const lockAquire = await acquireLock(productId, tx);
+    if (!lockAquire) {
+      throw new BadRequestException(PRODUCT_NOT_AVAILABLE_ERROR);
+    }
+
+    const product = await this.productsService.getOneByIdWithLock(productId, tx);
+    await tx.populate(product.owner, ["userProfile"]);
+
+    const buyer = await this.usersService.findByIdOrThrow(buyerId);
+
+    if (product.status !== EProductStatus.AVAILABLE) {
+      throw new BadRequestException(PRODUCT_NOT_AVAILABLE_ERROR);
+    }
+    if (product.owner.id === buyer.id) {
+      throw new ForbiddenException(CANNOT_BUY_OWN_PRODUCT_ERROR);
+    }
+
+    const seller = product.owner;
+    const sale = this.salesRepository.createOne({
+      product,
+      buyer,
+      seller,
+      price: product.purchasePrice,
+    });
+
+    product.status = EProductStatus.SOLD;
+
+    tx.persist(sale);
+    await tx.flush();
+
+    return sale;
   }
 
   getBoughtByUser(

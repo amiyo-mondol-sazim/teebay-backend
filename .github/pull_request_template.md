@@ -1,10 +1,6 @@
 ## Description of Change
 
-Please describe the change.
-
 ## Please list which modules are affected by your changes
-
-Do it, in a, comma separated, manner, please
 
 ---
 
@@ -22,5 +18,3 @@ Do it, in a, comma separated, manner, please
 ## Screenshots / Screen Recordings
 
 ## Reviewers
-
-Please tag the respective reviewers of the PR in this section (using `@`), e.g. @ehsanur-rahman-sazim
