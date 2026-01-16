@@ -1,12 +1,12 @@
 import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 
-import { EntityManager } from "@mikro-orm/postgresql";
+import type { EntityManager } from "@mikro-orm/postgresql";
 
+import type { Sale } from "@/common/entities/sales.entity";
+import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
 
-import { Sale } from "@/common/entities/sales.entity";
-import { EProductStatus } from "@/common/enums/products.enums";
 import {
   CANNOT_BUY_OWN_PRODUCT_ERROR,
   DEFAULT_SALES_PAGE_SIZE,

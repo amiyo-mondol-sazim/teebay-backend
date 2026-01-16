@@ -4,8 +4,6 @@ import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
 
-import { calculateRentPrice } from "./rents.helper";
-
 import {
   CANNOT_RENT_OWN_PRODUCT_ERROR,
   DEFAULT_RENTS_PAGE_SIZE,
@@ -16,6 +14,7 @@ import {
   UNAUTHORIZED_RENTS_VIEW_ERROR,
 } from "./rents.constants";
 import type { CreateRentDto } from "./rents.dtos";
+import { calculateRentPrice } from "./rents.helper";
 import { RentsRepository } from "./rents.repository";
 
 @Injectable()
