@@ -16,6 +16,7 @@ import { EmailsModule } from "./modules/emails/emails.module";
 import { HealthModule } from "./modules/health/health.module";
 import { ProductsModule } from "./modules/products/products.module";
 import { RolesModule } from "./modules/roles/roles.module";
+import { SalesModule } from "./modules/sales/sales.module";
 import { UserProfilesModule } from "./modules/user-profiles/user-profiles.module";
 import { UsersModule } from "./modules/users/users.module";
 import { VerificationRequestsModule } from "./modules/verification-requests/verification-requests.module";
@@ -48,6 +49,7 @@ import { PermissionsModule } from "./permissions/permissions.module";
 
     UsersModule,
     ProductsModule,
+    SalesModule,
     AuthModule,
     RolesModule,
     UserProfilesModule,

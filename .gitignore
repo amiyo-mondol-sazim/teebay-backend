@@ -43,3 +43,6 @@ volume
 .snapshot.json
 certs
 .postman
+.vscode
+*.sql
+postman

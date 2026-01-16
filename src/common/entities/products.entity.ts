@@ -1,9 +1,17 @@
-import { Entity, EntityRepositoryType, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
+import {
+  Entity,
+  EntityRepositoryType,
+  ManyToOne,
+  OneToOne,
+  PrimaryKey,
+  Property,
+} from "@mikro-orm/core";
 
 import { ProductsRepository } from "@/modules/products/products.repository";
 
-import { ERentalPeriod } from "../enums/products.enums";
+import { ERentalPeriod, EProductStatus } from "../enums/products.enums";
 import { CustomBaseEntity } from "./custom-base.entity";
+import { Sale } from "./sales.entity";
 import { User } from "./users.entity";
 @Entity({ tableName: "products", repository: () => ProductsRepository })
 export class Product extends CustomBaseEntity {
@@ -29,9 +37,15 @@ export class Product extends CustomBaseEntity {
   @Property({ fieldName: "rental_period", type: "text" })
   rentalPeriod!: ERentalPeriod;
 
+  @Property({ fieldName: "status", type: "text", default: EProductStatus.AVAILABLE })
+  status: EProductStatus = EProductStatus.AVAILABLE;
+
   @Property({ fieldName: "view_count", default: 0 })
   viewCount: number = 0;
 
   @ManyToOne(() => User, { fieldName: "owner_id" })
   owner!: User;
+
+  @OneToOne(() => Sale, (sale) => sale.product, { nullable: true })
+  sale?: Sale;
 }

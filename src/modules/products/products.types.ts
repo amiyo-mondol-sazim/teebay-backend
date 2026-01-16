@@ -1,7 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+import { User } from "@/common/entities/users.entity";
+
 import { PaginatedResponse } from "../../common/dtos/pagination.dtos";
-import { ERentalPeriod } from "../../common/enums/products.enums";
+import { EProductStatus, ERentalPeriod } from "../../common/enums/products.enums";
 
 export class ProductResponse {
   @ApiProperty()
@@ -25,8 +27,14 @@ export class ProductResponse {
   @ApiProperty({ enum: ERentalPeriod, enumName: "ERentalPeriod" })
   rentalPeriod!: ERentalPeriod;
 
+  @ApiProperty({ enum: EProductStatus, enumName: "EProductStatus" })
+  status!: EProductStatus;
+
   @ApiProperty()
   viewCount!: number;
+
+  @ApiProperty({ type: () => User, required: false })
+  owner?: User;
 
   @ApiProperty()
   createdAt!: Date;

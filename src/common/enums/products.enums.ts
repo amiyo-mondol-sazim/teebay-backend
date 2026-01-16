@@ -3,3 +3,9 @@ export enum ERentalPeriod {
   WEEK = "WEEK",
   MONTH = "MONTH",
 }
+
+export enum EProductStatus {
+  AVAILABLE = "AVAILABLE",
+  SOLD = "SOLD",
+  RENTED = "RENTED",
+}

@@ -47,7 +47,8 @@
     "test:bun:e2e": "dotenv -e ./.env.test.local -- bun test --config-file ./vitest.e2e.config.mts",
     "pre-push": "./scripts/pre-push-check.sh",
     "check": "yarn build && npx tsc --noEmit && npx prettier --check \"src/**/*.ts\" \"test/**/*.ts\" && yarn lint && yarn test",
-    "check:quick": "npx tsc --noEmit && yarn lint"
+    "check:quick": "npx tsc --noEmit && yarn lint",
+    "postman:generate": "npx openapi-to-postmanv2 -s ./openapi.yaml -o ./postman/collections/Teebay.postman_collection.json -p"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.685.0",

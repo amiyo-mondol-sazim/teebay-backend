@@ -1,5 +1,8 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
 
+import { type EntityManager, type LockMode } from "@mikro-orm/core";
+
+import { Product } from "@/common/entities/products.entity";
 import { UsersService } from "@/modules/users/users.service";
 
 import {
@@ -20,6 +23,13 @@ export class ProductsService {
   getOneById(id: number) {
     return this.productsRepository.findOneOrFail(id, {
       populate: ["owner"],
+    });
+  }
+
+  getOneByIdWithLock(id: number, em: EntityManager, lockMode: LockMode) {
+    return em.findOneOrFail(Product, id, {
+      populate: ["owner"],
+      lockMode,
     });
   }
 
