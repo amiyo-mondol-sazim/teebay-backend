@@ -102,13 +102,40 @@ describe("ProductsController", () => {
       expect(result.data[0]).not.toHaveProperty("owner");
     });
 
-    it("should return products filtered by categories", async () => {
+    it("should return products filtered by multiple categories", async () => {
       mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
       mockProductsSerializer.serializeMany.mockReturnValue([]);
 
       await controller.getAll(1, 10, "Electronics, , Gadgets");
 
       expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, ["Electronics", "Gadgets"]);
+    });
+
+    it("should handle single category filtering", async () => {
+      mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
+      mockProductsSerializer.serializeMany.mockReturnValue([]);
+
+      await controller.getAll(1, 10, "Electronics");
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, ["Electronics"]);
+    });
+
+    it("should handle empty category strings and multiple commas", async () => {
+      mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
+      mockProductsSerializer.serializeMany.mockReturnValue([]);
+
+      await controller.getAll(1, 10, ", , Electronics,,,Gadgets, ");
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, ["Electronics", "Gadgets"]);
+    });
+
+    it("should pass undefined when no categories are provided", async () => {
+      mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
+      mockProductsSerializer.serializeMany.mockReturnValue([]);
+
+      await controller.getAll(1, 10, undefined);
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, undefined);
     });
   });
 
