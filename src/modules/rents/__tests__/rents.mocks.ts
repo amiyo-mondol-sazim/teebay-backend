@@ -13,6 +13,8 @@ export const MOCK_OWNER_ID = 2;
 export const MOCK_PRODUCT_ID = 1;
 export const MOCK_RENT_ID = 1;
 
+export const MOCK_CALCULATED_RENT_PRICE = 60;
+
 export const MOCK_RENTER = new User("renter@example.com", faker.internet.password());
 MOCK_RENTER.id = MOCK_RENTER_ID;
 MOCK_RENTER.createdAt = new Date("2027-01-01");
