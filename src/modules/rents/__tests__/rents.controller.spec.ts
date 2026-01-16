@@ -169,4 +169,52 @@ describe("RentsController", () => {
       );
     });
   });
+
+  describe("getRentsByProduct", () => {
+    it("should return paginated rents for a product", async () => {
+      mockRentsService.getRentsByProduct.mockResolvedValue([MOCK_RENT_LIST, MOCK_TOTAL_COUNT]);
+      mockRentsSerializer.serializeMany.mockReturnValue([MOCK_RENT_RESPONSE]);
+
+      const result = await controller.getRentsByProduct(MOCK_PRODUCT_ID, 1, 10);
+
+      expect(mockRentsService.getRentsByProduct).toHaveBeenCalledWith(MOCK_PRODUCT_ID, 1, 10);
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0]).toEqual(MOCK_RENT_RESPONSE);
+      expect(result.meta.totalItems).toBe(MOCK_TOTAL_COUNT);
+      expect(result.meta.currentPage).toBe(1);
+      expect(result.meta.itemsPerPage).toBe(10);
+    });
+
+    it("should use default page and limit when not provided", async () => {
+      mockRentsService.getRentsByProduct.mockResolvedValue([MOCK_RENT_LIST, MOCK_TOTAL_COUNT]);
+      mockRentsSerializer.serializeMany.mockReturnValue([MOCK_RENT_RESPONSE]);
+
+      await controller.getRentsByProduct(MOCK_PRODUCT_ID, 1, 10);
+
+      expect(mockRentsService.getRentsByProduct).toHaveBeenCalledWith(MOCK_PRODUCT_ID, 1, 10);
+    });
+
+    it("should return empty array when no rents exist for product", async () => {
+      mockRentsService.getRentsByProduct.mockResolvedValue([[], 0]);
+      mockRentsSerializer.serializeMany.mockReturnValue([]);
+
+      const result = await controller.getRentsByProduct(MOCK_PRODUCT_ID, 1, 10);
+
+      expect(result.data).toHaveLength(0);
+      expect(result.meta.totalItems).toBe(0);
+    });
+
+    it("should calculate pagination metadata correctly", async () => {
+      const largeTotalCount = 55;
+      mockRentsService.getRentsByProduct.mockResolvedValue([MOCK_RENT_LIST, largeTotalCount]);
+      mockRentsSerializer.serializeMany.mockReturnValue([MOCK_RENT_RESPONSE]);
+
+      const result = await controller.getRentsByProduct(MOCK_PRODUCT_ID, 2, 10);
+
+      expect(result.meta.totalItems).toBe(largeTotalCount);
+      expect(result.meta.currentPage).toBe(2);
+      expect(result.meta.itemsPerPage).toBe(10);
+      expect(result.meta.totalPages).toBe(6);
+    });
+  });
 });

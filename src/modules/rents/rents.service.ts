@@ -4,6 +4,8 @@ import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
 
+import { calculateRentPrice } from "./rents.helper";
+
 import {
   CANNOT_RENT_OWN_PRODUCT_ERROR,
   DEFAULT_RENTS_PAGE_SIZE,
@@ -61,11 +63,18 @@ export class RentsService {
 
     const renter = await this.usersService.findByIdOrThrow(renterId);
 
+    const calculatedRentPrice = calculateRentPrice(
+      product.rentPrice,
+      product.rentalPeriod,
+      start,
+      end,
+    );
+
     const rent = this.rentsRepository.createOne({
       product,
       renter,
       owner: product.owner,
-      rentPrice: product.rentPrice,
+      rentPrice: calculatedRentPrice,
       startDate: start,
       endDate: end,
     });

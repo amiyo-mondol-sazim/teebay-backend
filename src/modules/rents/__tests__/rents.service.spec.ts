@@ -13,6 +13,7 @@ import { UsersService } from "@/modules/users/users.service";
 import { RentsRepository } from "../rents.repository";
 import { RentsService } from "../rents.service";
 import {
+  MOCK_CALCULATED_RENT_PRICE,
   MOCK_OWNER_ID,
   MOCK_PRODUCT,
   MOCK_PRODUCT_ID,
@@ -84,7 +85,7 @@ describe("RentsService", () => {
         product: MOCK_PRODUCT,
         renter: MOCK_RENTER,
         owner: MOCK_PRODUCT.owner,
-        rentPrice: MOCK_PRODUCT.rentPrice,
+        rentPrice: MOCK_CALCULATED_RENT_PRICE,
         startDate: new Date(createDto.startDate),
         endDate: new Date(createDto.endDate),
       });
@@ -229,6 +230,42 @@ describe("RentsService", () => {
       expect(() => service.getLentByUser(MOCK_OWNER_ID, differentUserId, 1, 10)).toThrow(
         ForbiddenException,
       );
+    });
+  });
+
+  describe("getRentsByProduct", () => {
+    it("should return paginated rents for a product", async () => {
+      mockRentsRepository.getRentsByProductId.mockResolvedValue([MOCK_RENT_LIST, MOCK_TOTAL_COUNT]);
+
+      const result = await service.getRentsByProduct(MOCK_PRODUCT_ID, 1, 10);
+
+      expect(mockRentsRepository.getRentsByProductId).toHaveBeenCalledWith(MOCK_PRODUCT_ID, 1, 10);
+      expect(result).toEqual([MOCK_RENT_LIST, MOCK_TOTAL_COUNT]);
+    });
+
+    it("should use default page and limit when not provided", async () => {
+      mockRentsRepository.getRentsByProductId.mockResolvedValue([MOCK_RENT_LIST, MOCK_TOTAL_COUNT]);
+
+      await service.getRentsByProduct(MOCK_PRODUCT_ID);
+
+      expect(mockRentsRepository.getRentsByProductId).toHaveBeenCalledWith(MOCK_PRODUCT_ID, 1, 10);
+    });
+
+    it("should return empty array when no rents exist for product", async () => {
+      mockRentsRepository.getRentsByProductId.mockResolvedValue([[], 0]);
+
+      const result = await service.getRentsByProduct(MOCK_PRODUCT_ID, 1, 10);
+
+      expect(result).toEqual([[], 0]);
+    });
+
+    it("should pass custom page and limit to repository", async () => {
+      mockRentsRepository.getRentsByProductId.mockResolvedValue([MOCK_RENT_LIST, MOCK_TOTAL_COUNT]);
+
+      const result = await service.getRentsByProduct(MOCK_PRODUCT_ID, 3, 25);
+
+      expect(mockRentsRepository.getRentsByProductId).toHaveBeenCalledWith(MOCK_PRODUCT_ID, 3, 25);
+      expect(result).toEqual([MOCK_RENT_LIST, MOCK_TOTAL_COUNT]);
     });
   });
 });
