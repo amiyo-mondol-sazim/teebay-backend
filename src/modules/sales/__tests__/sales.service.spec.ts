@@ -23,11 +23,15 @@ import {
   MOCK_TOTAL_COUNT,
 } from "./sales.mocks";
 
-const createMockEntityManager = (): EntityManager =>
-  ({
+const createMockEntityManager = (): EntityManager => {
+  const mockEm = {
     flush: vi.fn().mockResolvedValue(undefined),
     populate: vi.fn().mockResolvedValue(undefined),
-  } as unknown as EntityManager);
+    persist: vi.fn().mockReturnThis(),
+    transactional: vi.fn().mockImplementation((callback) => callback(mockEm)),
+  } as unknown as EntityManager;
+  return mockEm;
+};
 
 describe("SalesService", () => {
   let service: SalesService;
@@ -67,14 +71,14 @@ describe("SalesService", () => {
     it("should create a sale when product is available and buyer is not owner", async () => {
       const createDto = { productId: MOCK_PRODUCT_ID };
 
-      mockProductsService.getOneById.mockResolvedValue(MOCK_PRODUCT);
+      mockProductsService.getOneByIdWithLock.mockResolvedValue(MOCK_PRODUCT);
       mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_BUYER);
       mockSalesRepository.createOne.mockReturnValue(MOCK_SALE);
       mockSalesRepository.getEntityManager.mockReturnValue(createMockEntityManager());
 
       const result = await service.buyProduct(createDto, MOCK_BUYER_ID);
 
-      expect(mockProductsService.getOneById).toHaveBeenCalledWith(MOCK_PRODUCT_ID);
+      expect(mockProductsService.getOneByIdWithLock).toHaveBeenCalled();
       expect(mockUsersService.findByIdOrThrow).toHaveBeenCalledWith(MOCK_BUYER_ID);
       expect(mockSalesRepository.createOne).toHaveBeenCalledWith({
         product: MOCK_PRODUCT,
@@ -90,7 +94,7 @@ describe("SalesService", () => {
       const createDto = { productId: MOCK_PRODUCT_ID };
       const soldProduct = { ...MOCK_PRODUCT, status: EProductStatus.SOLD };
 
-      mockProductsService.getOneById.mockResolvedValue(soldProduct);
+      mockProductsService.getOneByIdWithLock.mockResolvedValue(soldProduct);
       mockSalesRepository.getEntityManager.mockReturnValue(createMockEntityManager());
 
       await expect(service.buyProduct(createDto, MOCK_BUYER_ID)).rejects.toThrow(
@@ -101,7 +105,7 @@ describe("SalesService", () => {
     it("should throw ForbiddenException when buyer tries to buy own product", async () => {
       const createDto = { productId: MOCK_PRODUCT_ID };
 
-      mockProductsService.getOneById.mockResolvedValue(MOCK_PRODUCT);
+      mockProductsService.getOneByIdWithLock.mockResolvedValue(MOCK_PRODUCT);
       mockSalesRepository.getEntityManager.mockReturnValue(createMockEntityManager());
 
       await expect(service.buyProduct(createDto, MOCK_SELLER_ID)).rejects.toThrow(

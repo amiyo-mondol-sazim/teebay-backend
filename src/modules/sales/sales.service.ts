@@ -1,5 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 
+import { LockMode } from "@mikro-orm/core";
+
 import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
@@ -21,32 +23,42 @@ export class SalesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async buyProduct(dto: CreateSaleDto, buyerId: number) {
-    const product = await this.productsService.getOneById(dto.productId);
-    await this.salesRepository.getEntityManager().populate(product.owner, ["userProfile"]);
+  buyProduct(dto: CreateSaleDto, buyerId: number) {
+    const em = this.salesRepository.getEntityManager();
 
-    if (product.status !== EProductStatus.AVAILABLE) {
-      throw new BadRequestException(PRODUCT_NOT_AVAILABLE_ERROR);
-    }
+    return em.transactional(async (tx) => {
+      const product = await this.productsService.getOneByIdWithLock(
+        dto.productId,
+        tx,
+        LockMode.PESSIMISTIC_WRITE,
+      );
 
-    if (product.owner.id === buyerId) {
-      throw new ForbiddenException(CANNOT_BUY_OWN_PRODUCT_ERROR);
-    }
+      await tx.populate(product.owner, ["userProfile"]);
 
-    const buyer = await this.usersService.findByIdOrThrow(buyerId);
+      if (product.status !== EProductStatus.AVAILABLE) {
+        throw new BadRequestException(PRODUCT_NOT_AVAILABLE_ERROR);
+      }
 
-    const sale = this.salesRepository.createOne({
-      product,
-      buyer,
-      seller: product.owner,
-      price: product.purchasePrice,
+      if (product.owner.id === buyerId) {
+        throw new ForbiddenException(CANNOT_BUY_OWN_PRODUCT_ERROR);
+      }
+
+      const buyer = await this.usersService.findByIdOrThrow(buyerId);
+
+      const sale = this.salesRepository.createOne({
+        product,
+        buyer,
+        seller: product.owner,
+        price: product.purchasePrice,
+      });
+
+      product.status = EProductStatus.SOLD;
+
+      tx.persist(sale);
+      await tx.flush();
+
+      return sale;
     });
-
-    product.status = EProductStatus.SOLD;
-
-    await this.salesRepository.getEntityManager().flush();
-
-    return sale;
   }
 
   getBoughtByUser(
