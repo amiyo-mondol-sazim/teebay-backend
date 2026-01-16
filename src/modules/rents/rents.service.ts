@@ -4,7 +4,6 @@ import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
 
-
 import {
   CANNOT_RENT_OWN_PRODUCT_ERROR,
   DEFAULT_RENTS_PAGE_SIZE,
