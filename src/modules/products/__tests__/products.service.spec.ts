@@ -1,4 +1,4 @@
-import { ForbiddenException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { Test } from "@nestjs/testing";
 
@@ -6,6 +6,7 @@ import type { EntityManager } from "@mikro-orm/postgresql";
 
 import { mockDeep } from "vitest-mock-extended";
 
+import { EProductStatus } from "@/common/enums/products.enums";
 import { UsersService } from "@/modules/users/users.service";
 
 import { ProductsRepository } from "../products.repository";
@@ -139,6 +140,16 @@ describe("ProductsService", () => {
         ForbiddenException,
       );
     });
+
+    it("should throw BadRequestException when product is not available", async () => {
+      const updateDto = { title: "Updated Title" };
+      const soldProduct = { ...MOCK_PRODUCT, status: EProductStatus.SOLD };
+      mockProductsRepository.findOneOrFail.mockResolvedValue(soldProduct);
+
+      await expect(service.updateOne(MOCK_PRODUCT_ID, updateDto, MOCK_OWNER_ID)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 
   describe("deleteOne", () => {
@@ -161,6 +172,15 @@ describe("ProductsService", () => {
 
       await expect(service.deleteOne(MOCK_PRODUCT_ID, differentUserId)).rejects.toThrow(
         ForbiddenException,
+      );
+    });
+
+    it("should throw BadRequestException when product is not available", async () => {
+      const soldProduct = { ...MOCK_PRODUCT, status: EProductStatus.SOLD };
+      mockProductsRepository.findOneOrFail.mockResolvedValue(soldProduct);
+
+      await expect(service.deleteOne(MOCK_PRODUCT_ID, MOCK_OWNER_ID)).rejects.toThrow(
+        BadRequestException,
       );
     });
   });

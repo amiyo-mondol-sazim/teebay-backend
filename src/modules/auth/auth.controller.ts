@@ -1,4 +1,5 @@
 import { Body, Controller, Param, Post, UseGuards, UseInterceptors } from "@nestjs/common";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { EUserRole } from "@/common/enums/roles.enums";
@@ -20,6 +21,7 @@ import { GoogleOAuthGuard } from "./guards/google-oauth.guard";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { LocalAuthGuard } from "./guards/local-auth.guard";
 
+@ApiBearerAuth()
 @Controller("auth")
 @UseInterceptors(ResponseTransformInterceptor)
 export class AuthController {

@@ -1,7 +1,9 @@
 import {
+  Collection,
   Entity,
   EntityRepositoryType,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryKey,
   Property,
@@ -9,8 +11,9 @@ import {
 
 import { ProductsRepository } from "@/modules/products/products.repository";
 
-import { ERentalPeriod, EProductStatus } from "../enums/products.enums";
+import { EProductStatus, ERentalPeriod } from "../enums/products.enums";
 import { CustomBaseEntity } from "./custom-base.entity";
+import { Rent } from "./rents.entity";
 import { Sale } from "./sales.entity";
 import { User } from "./users.entity";
 @Entity({ tableName: "products", repository: () => ProductsRepository })
@@ -48,4 +51,7 @@ export class Product extends CustomBaseEntity {
 
   @OneToOne(() => Sale, (sale) => sale.product, { nullable: true })
   sale?: Sale;
+
+  @OneToMany(() => Rent, (rent) => rent.product)
+  rents = new Collection<Rent>(this);
 }

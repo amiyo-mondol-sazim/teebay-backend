@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Patch, UseGuards, UseInterceptors } from "@nestjs/common";
+import { ApiBearerAuth } from "@nestjs/swagger";
 
 import { EUserRole } from "@/common/enums/roles.enums";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -11,6 +12,7 @@ import { UpdateRolesPermissionsDto } from "./roles.dtos";
 import { RolesSerializer } from "./roles.serializer";
 import { RolesService } from "./roles.service";
 
+@ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
 @UseGuards(JwtAuthGuard)
 @Controller("roles")
