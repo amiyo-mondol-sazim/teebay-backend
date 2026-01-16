@@ -43,6 +43,24 @@ export class RentsController {
     return this.rentsSerializer.serialize(rent);
   }
 
+  @Get("products/:productId")
+  async getRentsByProduct(
+    @Param("productId", ParseIntPipe) productId: number,
+    @Query("page", ParseIntPipe) page: number = 1,
+    @Query("limit", ParseIntPipe) limit: number = DEFAULT_RENTS_PAGE_SIZE,
+  ): Promise<RentsListResponse> {
+    const [rents, totalCount] = await this.rentsService.getRentsByProduct(productId, page, limit);
+    const meta = computePaginationMetadata({
+      page,
+      limit,
+      totalItems: totalCount,
+    });
+    return {
+      data: this.rentsSerializer.serializeMany(rents),
+      meta,
+    };
+  }
+
   @Get("borrows/:userId")
   async getBorrowsByUser(
     @Param("userId", ParseIntPipe) userId: number,

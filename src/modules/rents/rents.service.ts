@@ -39,8 +39,6 @@ export class RentsService {
     const start = new Date(dto.startDate);
     const end = new Date(dto.endDate);
     const now = new Date();
-    // Set hours to 0 to compare dates only if needed, but for precision we can use full date
-    // Actually, usually it's better to allow same day but not past
     now.setHours(0, 0, 0, 0);
 
     if (start < now) {
@@ -98,5 +96,9 @@ export class RentsService {
     }
 
     return this.rentsRepository.getLentByUserId(userId, page, limit);
+  }
+
+  getRentsByProduct(productId: number, page = 1, limit = DEFAULT_RENTS_PAGE_SIZE) {
+    return this.rentsRepository.getRentsByProductId(productId, page, limit);
   }
 }

@@ -44,4 +44,17 @@ export class RentsRepository extends CustomSQLBaseRepository<Rent> {
       $and: [{ startDate: { $lt: endDate } }, { endDate: { $gt: startDate } }],
     });
   }
+
+  getRentsByProductId(productId: number, page: number, limit: number) {
+    const qb = this.createQueryBuilder("r")
+      .select("*")
+      .leftJoinAndSelect("r.product", "p")
+      .leftJoinAndSelect("r.renter", "rent")
+      .leftJoinAndSelect("rent.userProfile", "rp")
+      .leftJoinAndSelect("r.owner", "o")
+      .leftJoinAndSelect("o.userProfile", "op")
+      .where({ product: productId })
+      .orderBy({ createdAt: "DESC" });
+    return this.retrievePaginatedRecordsByLimitAndOffset({ qb, page, limit });
+  }
 }
