@@ -10,6 +10,7 @@ import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
 
+import { acquireLock } from "../sales.helper";
 import { SalesRepository } from "../sales.repository";
 import { SalesService } from "../sales.service";
 import {
@@ -24,7 +25,6 @@ import {
   MOCK_TOTAL_COUNT,
 } from "./sales.mocks";
 
-import { acquireLock } from "../sales.helper";
 
 vi.mock("../sales.helper", () => ({
   acquireLock: vi.fn(),
@@ -126,7 +126,7 @@ describe("SalesService", () => {
 
       mockAcquireLock.mockResolvedValue(true);
       mockProductsService.getOneByIdWithLock.mockResolvedValue(MOCK_PRODUCT);
-      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_SELLER as any);
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_SELLER);
       mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
 
       await expect(service.buyProduct(createDto, MOCK_SELLER_ID)).rejects.toThrow(
