@@ -9,8 +9,8 @@ import { mockDeep } from "vitest-mock-extended";
 import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
+import { acquireLock } from "@/utils/lock";
 
-import { acquireLock } from "../sales.helper";
 import { SalesRepository } from "../sales.repository";
 import { SalesService } from "../sales.service";
 import {
@@ -25,7 +25,7 @@ import {
   MOCK_TOTAL_COUNT,
 } from "./sales.mocks";
 
-vi.mock("../sales.helper", () => ({
+vi.mock("@/utils/lock", () => ({
   acquireLock: vi.fn(),
 }));
 

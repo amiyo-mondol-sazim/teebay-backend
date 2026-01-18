@@ -1,5 +1,7 @@
 import { ERentalPeriod } from "@/common/enums/products.enums";
 
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const DECIMAL_PRECISION_MULTIPLIER = 100;
 export function calculateRentPrice(
   rentPrice: number,
   rentalPeriod: ERentalPeriod,
@@ -20,8 +22,10 @@ export function calculateRentPrice(
       break;
   }
 
-  // Calculate total rent price based on number of days
   const daysInMs = endDate.getTime() - startDate.getTime();
-  const daysRented = Math.ceil(daysInMs / (1000 * 60 * 60 * 24));
-  return Math.round(dailyRentPrice * daysRented * 100) / 100;
+  const daysRented = Math.ceil(daysInMs / MS_PER_DAY);
+  return (
+    Math.round(dailyRentPrice * daysRented * DECIMAL_PRECISION_MULTIPLIER) /
+    DECIMAL_PRECISION_MULTIPLIER
+  );
 }

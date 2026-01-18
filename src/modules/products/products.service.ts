@@ -15,6 +15,7 @@ import {
 } from "./products.constants";
 import type { CreateProductDto, UpdateProductDto } from "./products.dtos";
 import { ProductsRepository } from "./products.repository";
+import type { ProductFilters } from "./products.types";
 
 @Injectable()
 export class ProductsService {
@@ -37,8 +38,8 @@ export class ProductsService {
     return this.productsRepository.getAllByOwnerId(ownerId, page, limit);
   }
 
-  getAll(page = 1, limit = DEFAULT_PRODUCTS_PAGE_SIZE, categories?: string[]) {
-    return this.productsRepository.getAll(page, limit, categories);
+  getAll(page = 1, limit = DEFAULT_PRODUCTS_PAGE_SIZE, filters?: ProductFilters) {
+    return this.productsRepository.getAll(page, limit, filters);
   }
 
   async createOne(dto: CreateProductDto, ownerId: number) {
@@ -64,10 +65,6 @@ export class ProductsService {
       throw new BadRequestException(CANNOT_UPDATE_UNAVAILABLE_PRODUCT_ERROR);
     }
 
-    if (product.status !== EProductStatus.AVAILABLE) {
-      throw new BadRequestException(CANNOT_UPDATE_UNAVAILABLE_PRODUCT_ERROR);
-    }
-
     Object.assign(product, dto);
     await this.productsRepository.getEntityManager().flush();
     return product;
@@ -80,10 +77,6 @@ export class ProductsService {
 
     if (product.owner.id !== currentUserId) {
       throw new ForbiddenException(UNAUTHORIZED_PRODUCT_DELETE_ERROR);
-    }
-
-    if (product.status !== EProductStatus.AVAILABLE) {
-      throw new BadRequestException(CANNOT_DELETE_UNAVAILABLE_PRODUCT_ERROR);
     }
 
     if (product.status !== EProductStatus.AVAILABLE) {

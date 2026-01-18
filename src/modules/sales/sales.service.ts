@@ -6,6 +6,7 @@ import type { Sale } from "@/common/entities/sales.entity";
 import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
+import { acquireLock } from "@/utils/lock";
 
 import {
   CANNOT_BUY_OWN_PRODUCT_ERROR,
@@ -14,7 +15,6 @@ import {
   UNAUTHORIZED_SALES_VIEW_ERROR,
 } from "./sales.constants";
 import type { CreateSaleDto } from "./sales.dtos";
-import { acquireLock } from "./sales.helper";
 import { SalesRepository } from "./sales.repository";
 
 @Injectable()
@@ -39,8 +39,8 @@ export class SalesService {
     buyerId: number,
     tx: EntityManager,
   ): Promise<Sale> {
-    const lockAquire = await acquireLock(productId, tx);
-    if (!lockAquire) {
+    const lockAcquire = await acquireLock(productId, tx);
+    if (!lockAcquire) {
       throw new BadRequestException(PRODUCT_NOT_AVAILABLE_ERROR);
     }
 

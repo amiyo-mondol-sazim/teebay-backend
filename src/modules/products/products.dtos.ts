@@ -1,8 +1,12 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 
-import { IsArray, IsEnum, IsNumber, IsString, Min } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsEnum, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
-import { ERentalPeriod } from "@/common/enums/products.enums";
+import { EProductStatus, ERentalPeriod } from "@/common/enums/products.enums";
+import { IsValidPriceRange } from "@/common/validators/price-range.validator";
+
+import { DEFAULT_PRODUCTS_PAGE_SIZE } from "./products.constants";
 
 export class CreateProductDto {
   @ApiProperty({ example: "Product title" })
@@ -34,3 +38,65 @@ export class CreateProductDto {
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {}
+
+export class GetProductsQueryDto {
+  @IsValidPriceRange()
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private readonly _priceRangeValidation?: unknown;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(1)
+  limit?: number = DEFAULT_PRODUCTS_PAGE_SIZE;
+
+  @ApiProperty({
+    required: false,
+    enum: EProductStatus,
+    enumName: "EProductStatus",
+  })
+  @IsOptional()
+  @IsEnum(EProductStatus)
+  status?: EProductStatus;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  minPurchasePrice?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  maxPurchasePrice?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  minRentPrice?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  maxRentPrice?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  categories?: string;
+}
