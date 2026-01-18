@@ -1,8 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 
+import type { EntityManager } from "@mikro-orm/postgresql";
+
 import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
+import { acquireLock } from "@/utils/lock";
 
 import {
   CANNOT_RENT_OWN_PRODUCT_ERROR,
@@ -25,15 +28,28 @@ export class RentsService {
     private readonly usersService: UsersService,
   ) {}
 
-  async createRent(dto: CreateRentDto, renterId: number) {
+  createRent(dto: CreateRentDto, renterId: number) {
+    const em = this.rentsRepository.getEntityManager();
+
+    return em.transactional((tx) => this.executeRentCreation(dto, renterId, tx));
+  }
+
+  private async executeRentCreation(dto: CreateRentDto, renterId: number, tx: EntityManager) {
+    const lockAcquire = await acquireLock(dto.productId, tx);
+    if (!lockAcquire) {
+      throw new BadRequestException(PRODUCT_NOT_AVAILABLE_FOR_RENT_ERROR);
+    }
+
     const product = await this.productsService.getOneById(dto.productId);
-    await this.rentsRepository.getEntityManager().populate(product.owner, ["userProfile"]);
+    await tx.populate(product.owner, ["userProfile"]);
 
     if (product.status === EProductStatus.SOLD) {
       throw new BadRequestException(PRODUCT_NOT_AVAILABLE_FOR_RENT_ERROR);
     }
 
-    if (product.owner.id === renterId) {
+    const renter = await this.usersService.findByIdOrThrow(renterId);
+
+    if (product.owner.id === renter.id) {
       throw new ForbiddenException(CANNOT_RENT_OWN_PRODUCT_ERROR);
     }
 
@@ -60,8 +76,6 @@ export class RentsService {
       throw new BadRequestException(PRODUCT_ALREADY_RENTED_FOR_PERIOD_ERROR);
     }
 
-    const renter = await this.usersService.findByIdOrThrow(renterId);
-
     const calculatedRentPrice = calculateRentPrice(
       product.rentPrice,
       product.rentalPeriod,
@@ -80,7 +94,7 @@ export class RentsService {
 
     product.status = EProductStatus.RENTED;
 
-    await this.rentsRepository.getEntityManager().flush();
+    await tx.flush();
 
     return rent;
   }

@@ -14,16 +14,17 @@ import {
 import { ApiBearerAuth, ApiBody, ApiQuery } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
+import { EProductStatus } from "@/common/enums/products.enums";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
 import { CurrentUser } from "@/modules/auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 import { computePaginationMetadata } from "@/utils/pagination";
 
 import { DEFAULT_PRODUCTS_PAGE_SIZE } from "./products.constants";
-import { CreateProductDto, UpdateProductDto } from "./products.dtos";
+import { CreateProductDto, GetProductsQueryDto, UpdateProductDto } from "./products.dtos";
 import { ProductsSerializer } from "./products.serializer";
 import { ProductsService } from "./products.service";
-import type { ProductResponse, ProductsListResponse } from "./products.types";
+import type { ProductFilters, ProductResponse, ProductsListResponse } from "./products.types";
 
 @ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
@@ -36,23 +37,41 @@ export class ProductsController {
   ) {}
 
   @Get()
+  @ApiQuery({ name: "page", required: false, type: Number })
+  @ApiQuery({ name: "limit", required: false, type: Number })
+  @ApiQuery({ name: "status", required: false, enum: EProductStatus, enumName: "EProductStatus" })
+  @ApiQuery({ name: "minPurchasePrice", required: false, type: Number })
+  @ApiQuery({ name: "maxPurchasePrice", required: false, type: Number })
+  @ApiQuery({ name: "minRentPrice", required: false, type: Number })
+  @ApiQuery({ name: "maxRentPrice", required: false, type: Number })
   @ApiQuery({ name: "categories", required: false, type: String })
-  async getAll(
-    @Query("page", ParseIntPipe) page: number = 1,
-    @Query("limit", ParseIntPipe) limit: number = DEFAULT_PRODUCTS_PAGE_SIZE,
-    @Query("categories") categoriesParam?: string,
-  ): Promise<ProductsListResponse> {
-    const categories = categoriesParam
+  async getAll(@Query() queryDto: GetProductsQueryDto): Promise<ProductsListResponse> {
+    const categories = queryDto.categories
       ?.split(",")
       .map((c) => c.trim())
       .filter(Boolean);
 
-    const [products, totalCount] = await this.productsService.getAll(page, limit, categories);
+    const filters: ProductFilters = {
+      status: queryDto.status,
+      categories,
+      minPurchasePrice: queryDto.minPurchasePrice,
+      maxPurchasePrice: queryDto.maxPurchasePrice,
+      minRentPrice: queryDto.minRentPrice,
+      maxRentPrice: queryDto.maxRentPrice,
+    };
+
+    const [products, totalCount] = await this.productsService.getAll(
+      queryDto.page!,
+      queryDto.limit!,
+      filters,
+    );
+
     const meta = computePaginationMetadata({
-      page,
-      limit,
+      page: queryDto.page!,
+      limit: queryDto.limit!,
       totalItems: totalCount,
     });
+
     return {
       data: this.productsSerializer.serializeMany(products),
       meta,

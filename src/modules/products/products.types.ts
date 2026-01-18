@@ -47,3 +47,12 @@ export class ProductsListResponse extends PaginatedResponse {
   @ApiProperty({ type: () => [ProductResponse] })
   data!: ProductResponse[];
 }
+
+export interface ProductFilters {
+  status?: EProductStatus;
+  categories?: string[];
+  minPurchasePrice?: number;
+  maxPurchasePrice?: number;
+  minRentPrice?: number;
+  maxRentPrice?: number;
+}

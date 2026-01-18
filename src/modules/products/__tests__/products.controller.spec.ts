@@ -91,9 +91,27 @@ describe("ProductsController", () => {
       mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
       mockProductsSerializer.serializeMany.mockReturnValue([mockResponse]);
 
-      const result = await controller.getAll(1, 10, undefined);
+      const queryDto = {
+        page: 1,
+        limit: 10,
+        categories: undefined,
+        status: undefined,
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      };
 
-      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, undefined);
+      const result = await controller.getAll(queryDto);
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
+        status: undefined,
+        categories: undefined,
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      });
       expect(mockProductsSerializer.serializeMany).toHaveBeenCalledWith(MOCK_PRODUCT_LIST);
       expect(result.data).toHaveLength(1);
       expect(result.meta.totalItems).toBe(MOCK_TOTAL_COUNT);
@@ -106,36 +124,108 @@ describe("ProductsController", () => {
       mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
       mockProductsSerializer.serializeMany.mockReturnValue([]);
 
-      await controller.getAll(1, 10, "Electronics, , Gadgets");
+      const queryDto = {
+        page: 1,
+        limit: 10,
+        categories: "Electronics, , Gadgets",
+        status: undefined,
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      };
 
-      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, ["Electronics", "Gadgets"]);
+      await controller.getAll(queryDto);
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
+        status: undefined,
+        categories: ["Electronics", "Gadgets"],
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      });
     });
 
     it("should handle single category filtering", async () => {
       mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
       mockProductsSerializer.serializeMany.mockReturnValue([]);
 
-      await controller.getAll(1, 10, "Electronics");
+      const queryDto = {
+        page: 1,
+        limit: 10,
+        categories: "Electronics",
+        status: undefined,
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      };
 
-      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, ["Electronics"]);
+      await controller.getAll(queryDto);
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
+        status: undefined,
+        categories: ["Electronics"],
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      });
     });
 
     it("should handle empty category strings and multiple commas", async () => {
       mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
       mockProductsSerializer.serializeMany.mockReturnValue([]);
 
-      await controller.getAll(1, 10, ", , Electronics,,,Gadgets, ");
+      const queryDto = {
+        page: 1,
+        limit: 10,
+        categories: ", , Electronics,,,Gadgets, ",
+        status: undefined,
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      };
 
-      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, ["Electronics", "Gadgets"]);
+      await controller.getAll(queryDto);
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
+        status: undefined,
+        categories: ["Electronics", "Gadgets"],
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      });
     });
 
     it("should pass undefined when no categories are provided", async () => {
       mockProductsService.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
       mockProductsSerializer.serializeMany.mockReturnValue([]);
 
-      await controller.getAll(1, 10, undefined);
+      const queryDto = {
+        page: 1,
+        limit: 10,
+        categories: undefined,
+        status: undefined,
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      };
 
-      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, undefined);
+      await controller.getAll(queryDto);
+
+      expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
+        status: undefined,
+        categories: undefined,
+        minPurchasePrice: undefined,
+        maxPurchasePrice: undefined,
+        minRentPrice: undefined,
+        maxRentPrice: undefined,
+      });
     });
   });
 

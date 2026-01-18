@@ -6,6 +6,7 @@ import { Product } from "@/common/entities/products.entity";
 import { CustomSQLBaseRepository } from "@/common/repository/custom-sql-base.repository";
 
 import { PRODUCT_NOT_FOUND_ERROR } from "./products.constants";
+import type { ProductFilters } from "./products.types";
 
 @Injectable()
 export class ProductsRepository extends CustomSQLBaseRepository<Product> {
@@ -32,11 +33,31 @@ export class ProductsRepository extends CustomSQLBaseRepository<Product> {
     return this.em.map(Product, result);
   }
 
-  getAll(page: number, limit: number, categories?: string[]) {
+  getAll(page: number, limit: number, filters?: ProductFilters) {
     const qb = this.createQueryBuilder().orderBy({ createdAt: "DESC" });
 
-    if (categories && categories.length > 0) {
-      qb.andWhere({ categories: { $overlap: categories } });
+    if (filters?.status) {
+      qb.andWhere({ status: filters.status });
+    }
+
+    if (filters?.categories && filters.categories.length > 0) {
+      qb.andWhere({ categories: { $overlap: filters.categories } });
+    }
+
+    if (filters?.minPurchasePrice !== undefined) {
+      qb.andWhere({ purchasePrice: { $gte: filters.minPurchasePrice } });
+    }
+
+    if (filters?.maxPurchasePrice !== undefined) {
+      qb.andWhere({ purchasePrice: { $lte: filters.maxPurchasePrice } });
+    }
+
+    if (filters?.minRentPrice !== undefined) {
+      qb.andWhere({ rentPrice: { $gte: filters.minRentPrice } });
+    }
+
+    if (filters?.maxRentPrice !== undefined) {
+      qb.andWhere({ rentPrice: { $lte: filters.maxRentPrice } });
     }
 
     return this.retrievePaginatedRecordsByLimitAndOffset({ qb, page, limit });

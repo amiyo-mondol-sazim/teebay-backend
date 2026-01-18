@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     root: "./",
+    environment: "node",
     include: ["**/*.spec.ts", "!**/*.int.spec.ts"],
     env: {
       // vitest overrides this for some reason: https://github.com/vitest-dev/vitest/discussions/5695

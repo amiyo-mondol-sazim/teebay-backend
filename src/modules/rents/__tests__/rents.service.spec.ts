@@ -9,11 +9,14 @@ import { mockDeep } from "vitest-mock-extended";
 import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
+import { acquireLock } from "@/utils/lock";
 
+import { calculateRentPrice } from "../rents.helper";
 import { RentsRepository } from "../rents.repository";
 import { RentsService } from "../rents.service";
 import {
   MOCK_CALCULATED_RENT_PRICE,
+  MOCK_OWNER,
   MOCK_OWNER_ID,
   MOCK_PRODUCT,
   MOCK_PRODUCT_ID,
@@ -24,10 +27,20 @@ import {
   MOCK_TOTAL_COUNT,
 } from "./rents.mocks";
 
+vi.mock("@/utils/lock", () => ({
+  acquireLock: vi.fn(),
+}));
+
+vi.mock("../rents.helper", () => ({
+  calculateRentPrice: vi.fn(),
+}));
+
 const createMockEntityManager = (): EntityManager =>
   ({
     flush: vi.fn().mockResolvedValue(undefined),
     populate: vi.fn().mockResolvedValue(undefined),
+    transactional: vi.fn().mockImplementation((callback) => callback(createMockEntityManager())),
+    execute: vi.fn().mockResolvedValue([{ pg_try_advisory_xact_lock: true }]),
   } as unknown as EntityManager);
 
 describe("RentsService", () => {
@@ -38,6 +51,9 @@ describe("RentsService", () => {
   const mockUsersService = mockDeep<UsersService>({ funcPropSupport: true });
 
   beforeEach(async () => {
+    vi.mocked(acquireLock).mockResolvedValue(true);
+    vi.mocked(calculateRentPrice).mockReturnValue(MOCK_CALCULATED_RENT_PRICE);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RentsService,
@@ -117,6 +133,7 @@ describe("RentsService", () => {
       };
 
       mockProductsService.getOneById.mockResolvedValue(MOCK_PRODUCT);
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_RENTER);
       mockRentsRepository.getEntityManager.mockReturnValue(createMockEntityManager());
       mockRentsRepository.findOverlappingRent.mockResolvedValue(MOCK_RENT);
 
@@ -157,6 +174,7 @@ describe("RentsService", () => {
       };
 
       mockProductsService.getOneById.mockResolvedValue(MOCK_PRODUCT);
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_OWNER);
       mockRentsRepository.getEntityManager.mockReturnValue(createMockEntityManager());
 
       await expect(service.createRent(createDto, MOCK_OWNER_ID)).rejects.toThrow(
@@ -172,6 +190,7 @@ describe("RentsService", () => {
       };
 
       mockProductsService.getOneById.mockResolvedValue(MOCK_PRODUCT);
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_RENTER);
       mockRentsRepository.getEntityManager.mockReturnValue(createMockEntityManager());
 
       await expect(service.createRent(createDto, MOCK_RENTER_ID)).rejects.toThrow(
@@ -187,6 +206,7 @@ describe("RentsService", () => {
       };
 
       mockProductsService.getOneById.mockResolvedValue(MOCK_PRODUCT);
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_RENTER);
       mockRentsRepository.getEntityManager.mockReturnValue(createMockEntityManager());
 
       await expect(service.createRent(createDto, MOCK_RENTER_ID)).rejects.toThrow(
