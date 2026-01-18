@@ -94,9 +94,13 @@ describe("ProductsService", () => {
       const categories = ["Electronics", "Gadgets"];
       mockProductsRepository.getAll.mockResolvedValue([MOCK_PRODUCT_LIST, MOCK_TOTAL_COUNT]);
 
-      await service.getAll(1, 10, categories);
+      const filters = {
+        categories: categories,
+      };
 
-      expect(mockProductsRepository.getAll).toHaveBeenCalledWith(1, 10, categories);
+      await service.getAll(1, 10, filters);
+
+      expect(mockProductsRepository.getAll).toHaveBeenCalledWith(1, 10, filters);
     });
   });
 
