@@ -32,6 +32,19 @@ class EnvironmentVariables implements IEnvironmentVariables {
   JWT_TOKEN_LIFETIME!: string;
 
   @IsString()
+  AWS_S3_REGION!: string;
+
+  @IsString()
+  AWS_S3_ENDPOINT!: string;
+
+  @IsString()
+  AWS_S3_BUCKET_NAME!: string;
+
+  @IsNumber()
+  @IsPositive()
+  AWS_S3_PRESIGN_URL_EXPIRY_IN_MINUTES!: number;
+
+  @IsString()
   SENDGRID_API_KEY!: string;
 
   @IsOptional()

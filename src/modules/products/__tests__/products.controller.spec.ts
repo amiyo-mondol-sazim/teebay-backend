@@ -293,6 +293,44 @@ describe("ProductsController", () => {
       expect(mockProductsSerializer.serialize).toHaveBeenCalledWith(MOCK_PRODUCT);
       expect(result).toEqual(mockResponse);
     });
+
+    it("should create a product with imageUrl", async () => {
+      const createDto = {
+        title: "Camera",
+        description: "DSLR camera",
+        categories: ["electronics"],
+        purchasePrice: 500,
+        rentPrice: 25,
+        rentalPeriod: MOCK_PRODUCT.rentalPeriod,
+        imageUrl: "http://localhost:4566/bucket/products/camera.jpg",
+      };
+
+      const mockResponse: ProductResponse = {
+        id: MOCK_PRODUCT_ID,
+        title: createDto.title,
+        description: createDto.description,
+        categories: createDto.categories,
+        purchasePrice: createDto.purchasePrice,
+        rentPrice: createDto.rentPrice,
+        rentalPeriod: createDto.rentalPeriod,
+        status: MOCK_PRODUCT.status,
+        viewCount: 0,
+        imageUrl: createDto.imageUrl,
+        owner: MOCK_OWNER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockProductsService.createOne.mockResolvedValue(MOCK_PRODUCT);
+      mockProductsSerializer.serialize.mockReturnValue(mockResponse);
+
+      const result = await controller.create(createDto, MOCK_OWNER);
+
+      expect(mockProductsService.createOne).toHaveBeenCalledWith(createDto, MOCK_OWNER_ID);
+      expect(mockProductsSerializer.serialize).toHaveBeenCalledWith(MOCK_PRODUCT);
+      expect(result).toEqual(mockResponse);
+      expect(result.imageUrl).toBe(createDto.imageUrl);
+    });
   });
 
   describe("update", () => {

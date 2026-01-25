@@ -46,6 +46,9 @@ export class Product extends CustomBaseEntity {
   @Property({ fieldName: "view_count", default: 0 })
   viewCount: number = 0;
 
+  @Property({ fieldName: "image_url", type: "text", nullable: true })
+  imageUrl?: string;
+
   @ManyToOne(() => User, { fieldName: "owner_id" })
   owner!: User;
 

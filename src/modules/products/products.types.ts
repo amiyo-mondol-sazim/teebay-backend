@@ -33,6 +33,9 @@ export class ProductResponse {
   @ApiProperty()
   viewCount!: number;
 
+  @ApiProperty({ required: false })
+  imageUrl?: string;
+
   @ApiProperty({ type: () => User, required: false })
   owner?: User;
 

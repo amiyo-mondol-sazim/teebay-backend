@@ -35,6 +35,14 @@ export class CreateProductDto {
   @ApiProperty({ enum: ERentalPeriod, enumName: "ERentalPeriod", example: ERentalPeriod.DAY })
   @IsEnum(ERentalPeriod)
   rentalPeriod!: ERentalPeriod;
+
+  @ApiProperty({
+    required: false,
+    example: "http://localhost:4566/project-dev-bucket/products/abc-123.jpg",
+  })
+  @IsOptional()
+  @IsString()
+  imageUrl?: string;
 }
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {}

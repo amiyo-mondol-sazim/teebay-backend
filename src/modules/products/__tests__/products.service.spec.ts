@@ -105,7 +105,32 @@ describe("ProductsService", () => {
   });
 
   describe("createOne", () => {
-    it("should create a product", async () => {
+    it("should create a product with imageUrl", async () => {
+      const createDto = {
+        title: "New Product",
+        description: "Description",
+        categories: ["Category"],
+        purchasePrice: 50,
+        rentPrice: 5,
+        rentalPeriod: MOCK_PRODUCT.rentalPeriod,
+        imageUrl: "http://localhost:4566/bucket/products/test.jpg",
+      };
+
+      mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_OWNER);
+      mockProductsRepository.createOne.mockReturnValue(MOCK_PRODUCT);
+      mockProductsRepository.getEntityManager.mockReturnValue(createMockEntityManager());
+
+      const result = await service.createOne(createDto, MOCK_OWNER_ID);
+
+      expect(mockUsersService.findByIdOrThrow).toHaveBeenCalledWith(MOCK_OWNER_ID);
+      expect(mockProductsRepository.createOne).toHaveBeenCalledWith({
+        ...createDto,
+        owner: MOCK_OWNER,
+      });
+      expect(result).toEqual(MOCK_PRODUCT);
+    });
+
+    it("should create a product without imageUrl", async () => {
       const createDto = {
         title: "New Product",
         description: "Description",
@@ -121,7 +146,6 @@ describe("ProductsService", () => {
 
       const result = await service.createOne(createDto, MOCK_OWNER_ID);
 
-      expect(mockUsersService.findByIdOrThrow).toHaveBeenCalledWith(MOCK_OWNER_ID);
       expect(mockProductsRepository.createOne).toHaveBeenCalledWith({
         ...createDto,
         owner: MOCK_OWNER,
