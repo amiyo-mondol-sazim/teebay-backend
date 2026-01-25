@@ -13,6 +13,7 @@ import { validate } from "./common/validators/env.validator";
 import ormConfig from "./db/db.config";
 import { AuthModule } from "./modules/auth/auth.module";
 import { EmailsModule } from "./modules/emails/emails.module";
+import { FileUploadsModule } from "./modules/file-uploads/file-uploads.module";
 import { HealthModule } from "./modules/health/health.module";
 import { ProductsModule } from "./modules/products/products.module";
 import { RentsModule } from "./modules/rents/rents.module";
@@ -47,7 +48,7 @@ import { PermissionsModule } from "./permissions/permissions.module";
     EmailsModule,
 
     AuditLoggingModule,
-
+    FileUploadsModule,
     UsersModule,
     ProductsModule,
     SalesModule,

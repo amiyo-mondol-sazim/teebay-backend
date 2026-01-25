@@ -23,7 +23,7 @@ import { FileUploadsService } from "./file-uploads.service";
         const endpoint = config.get("AWS_S3_ENDPOINT");
 
         const credentials = isLocalEnv
-          ? undefined
+          ? { accessKeyId: "test", secretAccessKey: "test" }
           : {
               accessKeyId: config.get("DO_SPACES_ACCESS_KEY"),
               secretAccessKey: config.get("DO_SPACES_SECRET_KEY"),
