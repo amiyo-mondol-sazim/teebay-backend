@@ -15,14 +15,14 @@ import { UserFactory } from "../factories/user.factory";
 
 export class StandardDatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
-    const superUserRole = await em.findOneOrFail(Role, { name: EUserRole.SUPER_USER });
+    const userRole = await em.findOneOrFail(Role, { name: EUserRole.USER });
 
     const userFactory = new UserFactory(em);
     const users = userFactory.make(50);
 
     for (const user of users) {
       if (user.userProfile) {
-        user.userProfile.role = superUserRole;
+        user.userProfile.role = userRole;
         user.userProfile.user = user;
       }
       em.persist(user);

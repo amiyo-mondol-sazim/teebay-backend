@@ -7,7 +7,7 @@ export class Migration20240316095632_create_users_user_profiles_roles_permission
     );
 
     this.addSql(
-      'create table "roles" ("id" serial primary key, "created_at" timestamptz not null, "updated_at" timestamptz not null, "name" text check ("name" in (\'SUPER_USER\', \'ADMIN\')) not null);',
+      'create table "roles" ("id" serial primary key, "created_at" timestamptz not null, "updated_at" timestamptz not null, "name" text check ("name" in (\'SUPER_USER\', \'ADMIN\', \'USER\')) not null);',
     );
 
     this.addSql(

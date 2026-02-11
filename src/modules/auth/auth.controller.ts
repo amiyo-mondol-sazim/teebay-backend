@@ -53,7 +53,7 @@ export class AuthController {
   async signInWithGoogle(@CurrentUser() googleUser: IGoogleOnlineUser): Promise<SignInResponse> {
     const user = await this.authService.signInWithGoogle({
       user: googleUser,
-      roleName: EUserRole.ADMIN,
+      roleName: EUserRole.USER,
     });
 
     const accessToken = await this.authService.createAccessToken(user);
@@ -71,7 +71,7 @@ export class AuthController {
   ): Promise<SignInResponse> {
     const user = await this.authService.signInWithGoogle({
       user: googleUser,
-      roleName: EUserRole.ADMIN,
+      roleName: EUserRole.USER,
     });
 
     const accessToken = await this.authService.createAccessToken(user);

@@ -45,6 +45,14 @@ export class RentsRepository extends CustomSQLBaseRepository<Rent> {
     });
   }
 
+  findActiveRent(productId: number): Promise<Rent | null> {
+    const now = new Date();
+    return this.findOne({
+      product: productId,
+      $and: [{ startDate: { $lte: now } }, { endDate: { $gte: now } }],
+    });
+  }
+
   getRentsByProductId(productId: number, page: number, limit: number) {
     const qb = this.createQueryBuilder("r")
       .select("*")

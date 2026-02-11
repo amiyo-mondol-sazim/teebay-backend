@@ -19,10 +19,10 @@ import { RolesRepository } from "../roles/roles.repository";
 import { VerificationRequestsService } from "../verification-requests/verification-requests.service";
 import { EMAIL_VERIFICATION_EMAIL_EXPIRATION_IN_MINUTES } from "./users.constants";
 import type {
-  UpdateUserAsSuperuserDto,
   RegisterUserDto,
   SelfRegisterUserDto,
   SuperuserFindAllUsersParams,
+  UpdateUserAsSuperuserDto,
 } from "./users.dtos";
 import { UsersRepository } from "./users.repository";
 
@@ -110,7 +110,7 @@ export class UsersService {
     return newUser;
   }
 
-  async selfRegister(selfRegisterUserDto: SelfRegisterUserDto, roleName = EUserRole.ADMIN) {
+  async selfRegister(selfRegisterUserDto: SelfRegisterUserDto, roleName = EUserRole.USER) {
     const existingUser = await this.usersRepository.findOne({
       email: selfRegisterUserDto.email,
     });

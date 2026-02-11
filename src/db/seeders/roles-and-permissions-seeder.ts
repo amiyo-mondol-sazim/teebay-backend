@@ -15,6 +15,8 @@ export class RolesAndPermissionsSeeder extends Seeder {
     ],
 
     [EUserRole.ADMIN]: [EPermission.CREATE_USER, EPermission.READ_USER, EPermission.UPDATE_USER],
+
+    [EUserRole.USER]: [EPermission.READ_USER],
   };
 
   async run(em: EntityManager) {

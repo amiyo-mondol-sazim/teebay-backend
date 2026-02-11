@@ -5,12 +5,14 @@ import type { EntityManager } from "@mikro-orm/postgresql";
 import type { Sale } from "@/common/entities/sales.entity";
 import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
+import { RentsRepository } from "@/modules/rents/rents.repository";
 import { UsersService } from "@/modules/users/users.service";
 import { acquireLock } from "@/utils/lock";
 
 import {
   CANNOT_BUY_OWN_PRODUCT_ERROR,
   DEFAULT_SALES_PAGE_SIZE,
+  PRODUCT_CURRENTLY_RENTED_ERROR,
   PRODUCT_NOT_AVAILABLE_ERROR,
   UNAUTHORIZED_SALES_VIEW_ERROR,
 } from "./sales.constants";
@@ -23,6 +25,7 @@ export class SalesService {
     private readonly salesRepository: SalesRepository,
     private readonly productsService: ProductsService,
     private readonly usersService: UsersService,
+    private readonly rentsRepository: RentsRepository,
   ) {}
 
   buyProduct(dto: CreateSaleDto, buyerId: number) {
@@ -54,6 +57,11 @@ export class SalesService {
     }
     if (product.owner.id === buyer.id) {
       throw new ForbiddenException(CANNOT_BUY_OWN_PRODUCT_ERROR);
+    }
+
+    const activeRent = await this.rentsRepository.findActiveRent(product.id);
+    if (activeRent) {
+      throw new BadRequestException(PRODUCT_CURRENTLY_RENTED_ERROR);
     }
 
     const seller = product.owner;
