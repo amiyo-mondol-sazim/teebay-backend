@@ -102,7 +102,7 @@ describe("ProductsController", () => {
         maxRentPrice: undefined,
       };
 
-      const result = await controller.getAll(queryDto);
+      const result = await controller.getAll(queryDto, MOCK_OWNER);
 
       expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
         status: undefined,
@@ -111,6 +111,7 @@ describe("ProductsController", () => {
         maxPurchasePrice: undefined,
         minRentPrice: undefined,
         maxRentPrice: undefined,
+        excludeOwnerId: MOCK_OWNER_ID,
       });
       expect(mockProductsSerializer.serializeMany).toHaveBeenCalledWith(MOCK_PRODUCT_LIST);
       expect(result.data).toHaveLength(1);
@@ -135,7 +136,7 @@ describe("ProductsController", () => {
         maxRentPrice: undefined,
       };
 
-      await controller.getAll(queryDto);
+      await controller.getAll(queryDto, MOCK_OWNER);
 
       expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
         status: undefined,
@@ -144,6 +145,7 @@ describe("ProductsController", () => {
         maxPurchasePrice: undefined,
         minRentPrice: undefined,
         maxRentPrice: undefined,
+        excludeOwnerId: MOCK_OWNER_ID,
       });
     });
 
@@ -162,7 +164,7 @@ describe("ProductsController", () => {
         maxRentPrice: undefined,
       };
 
-      await controller.getAll(queryDto);
+      await controller.getAll(queryDto, MOCK_OWNER);
 
       expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
         status: undefined,
@@ -171,6 +173,7 @@ describe("ProductsController", () => {
         maxPurchasePrice: undefined,
         minRentPrice: undefined,
         maxRentPrice: undefined,
+        excludeOwnerId: MOCK_OWNER_ID,
       });
     });
 
@@ -189,7 +192,7 @@ describe("ProductsController", () => {
         maxRentPrice: undefined,
       };
 
-      await controller.getAll(queryDto);
+      await controller.getAll(queryDto, MOCK_OWNER);
 
       expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
         status: undefined,
@@ -198,6 +201,7 @@ describe("ProductsController", () => {
         maxPurchasePrice: undefined,
         minRentPrice: undefined,
         maxRentPrice: undefined,
+        excludeOwnerId: MOCK_OWNER_ID,
       });
     });
 
@@ -216,7 +220,7 @@ describe("ProductsController", () => {
         maxRentPrice: undefined,
       };
 
-      await controller.getAll(queryDto);
+      await controller.getAll(queryDto, MOCK_OWNER);
 
       expect(mockProductsService.getAll).toHaveBeenCalledWith(1, 10, {
         status: undefined,
@@ -225,6 +229,7 @@ describe("ProductsController", () => {
         maxPurchasePrice: undefined,
         minRentPrice: undefined,
         maxRentPrice: undefined,
+        excludeOwnerId: MOCK_OWNER_ID,
       });
     });
   });

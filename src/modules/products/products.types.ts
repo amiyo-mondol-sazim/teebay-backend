@@ -58,4 +58,5 @@ export interface ProductFilters {
   maxPurchasePrice?: number;
   minRentPrice?: number;
   maxRentPrice?: number;
+  excludeOwnerId?: number;
 }

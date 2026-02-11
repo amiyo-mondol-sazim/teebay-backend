@@ -45,7 +45,10 @@ export class ProductsController {
   @ApiQuery({ name: "minRentPrice", required: false, type: Number })
   @ApiQuery({ name: "maxRentPrice", required: false, type: Number })
   @ApiQuery({ name: "categories", required: false, type: String })
-  async getAll(@Query() queryDto: GetProductsQueryDto): Promise<ProductsListResponse> {
+  async getAll(
+    @Query() queryDto: GetProductsQueryDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<ProductsListResponse> {
     const categories = queryDto.categories
       ?.split(",")
       .map((c) => c.trim())
@@ -58,6 +61,7 @@ export class ProductsController {
       maxPurchasePrice: queryDto.maxPurchasePrice,
       minRentPrice: queryDto.minRentPrice,
       maxRentPrice: queryDto.maxRentPrice,
+      excludeOwnerId: currentUser.id,
     };
 
     const [products, totalCount] = await this.productsService.getAll(

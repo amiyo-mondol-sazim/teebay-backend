@@ -60,6 +60,10 @@ export class ProductsRepository extends CustomSQLBaseRepository<Product> {
       qb.andWhere({ rentPrice: { $lte: filters.maxRentPrice } });
     }
 
+    if (filters?.excludeOwnerId !== undefined) {
+      qb.andWhere({ owner: { $ne: filters.excludeOwnerId } });
+    }
+
     return this.retrievePaginatedRecordsByLimitAndOffset({ qb, page, limit });
   }
 

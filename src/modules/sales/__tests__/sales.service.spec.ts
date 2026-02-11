@@ -13,7 +13,6 @@ import { RentsRepository } from "@/modules/rents/rents.repository";
 import { UsersService } from "@/modules/users/users.service";
 import { acquireLock } from "@/utils/lock";
 
-
 import { SalesRepository } from "../sales.repository";
 import { SalesService } from "../sales.service";
 import {
