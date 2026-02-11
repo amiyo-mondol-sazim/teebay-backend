@@ -6,10 +6,13 @@ import type { EntityManager } from "@mikro-orm/postgresql";
 
 import { mockDeep } from "vitest-mock-extended";
 
+import type { Rent } from "@/common/entities/rents.entity";
 import { EProductStatus } from "@/common/enums/products.enums";
 import { ProductsService } from "@/modules/products/products.service";
+import { RentsRepository } from "@/modules/rents/rents.repository";
 import { UsersService } from "@/modules/users/users.service";
 import { acquireLock } from "@/utils/lock";
+
 
 import { SalesRepository } from "../sales.repository";
 import { SalesService } from "../sales.service";
@@ -46,6 +49,7 @@ describe("SalesService", () => {
   const mockSalesRepository = mockDeep<SalesRepository>({ funcPropSupport: true });
   const mockProductsService = mockDeep<ProductsService>({ funcPropSupport: true });
   const mockUsersService = mockDeep<UsersService>({ funcPropSupport: true });
+  const mockRentsRepository = mockDeep<RentsRepository>({ funcPropSupport: true });
   const mockAcquireLock = vi.mocked(acquireLock);
 
   beforeEach(async () => {
@@ -63,6 +67,10 @@ describe("SalesService", () => {
         {
           provide: UsersService,
           useValue: mockUsersService,
+        },
+        {
+          provide: RentsRepository,
+          useValue: mockRentsRepository,
         },
       ],
     }).compile();
@@ -85,6 +93,7 @@ describe("SalesService", () => {
       mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_BUYER);
       mockSalesRepository.createOne.mockReturnValue(MOCK_SALE);
       mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
+      mockRentsRepository.findActiveRent.mockResolvedValue(null);
 
       const result = await service.buyProduct(createDto, MOCK_BUYER_ID);
 
@@ -113,6 +122,7 @@ describe("SalesService", () => {
       mockProductsService.getOneByIdWithLock.mockResolvedValue(soldProduct);
       mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_BUYER);
       mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
+      mockRentsRepository.findActiveRent.mockResolvedValue(null);
 
       await expect(service.buyProduct(createDto, MOCK_BUYER_ID)).rejects.toThrow(
         BadRequestException,
@@ -127,6 +137,7 @@ describe("SalesService", () => {
       mockProductsService.getOneByIdWithLock.mockResolvedValue(MOCK_PRODUCT);
       mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_SELLER);
       mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
+      mockRentsRepository.findActiveRent.mockResolvedValue(null);
 
       await expect(service.buyProduct(createDto, MOCK_SELLER_ID)).rejects.toThrow(
         ForbiddenException,
@@ -142,6 +153,10 @@ describe("SalesService", () => {
       mockProductsService.getOneByIdWithLock.mockResolvedValue(rentedProduct);
       mockUsersService.findByIdOrThrow.mockResolvedValue(MOCK_BUYER);
       mockSalesRepository.getEntityManager.mockReturnValue(mockTx);
+      mockRentsRepository.findActiveRent.mockResolvedValue({
+        id: 1,
+        product: MOCK_PRODUCT,
+      } as Rent);
 
       await expect(service.buyProduct(createDto, MOCK_BUYER_ID)).rejects.toThrow(
         BadRequestException,
