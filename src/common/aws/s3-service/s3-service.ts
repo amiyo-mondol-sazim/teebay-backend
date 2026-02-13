@@ -10,13 +10,28 @@ import { isLocal } from "@/utils/env";
 @Injectable()
 export class S3Service {
   private readonly logger = new Logger(S3Service.name);
+  private readonly presignedUrlClient: S3Client;
 
   constructor(
     private readonly s3: S3,
     private readonly s3Client: S3Client,
     private readonly bucketName: string,
     private readonly config: ConfigService,
-  ) {}
+  ) {
+    const isLocalEnv = isLocal(this.config.get("STAGE_ENV"));
+    const region = this.config.get("AWS_S3_REGION");
+
+    if (isLocalEnv) {
+      this.presignedUrlClient = new S3Client({
+        region,
+        endpoint: this.config.get("AWS_S3_BUCKET_URL") || "http://localhost:4566",
+        forcePathStyle: true,
+        credentials: { accessKeyId: "test", secretAccessKey: "test" },
+      });
+    } else {
+      this.presignedUrlClient = this.s3Client;
+    }
+  }
 
   private getFolderName() {
     const stageEnv = this.config.get("STAGE_ENV");
@@ -51,7 +66,7 @@ export class S3Service {
     const expiryInMinutes = this.config.get<number>("AWS_S3_PRESIGN_URL_EXPIRY_IN_MINUTES", {
       infer: true,
     })!;
-    return getSignedUrl(this.s3Client, command, { expiresIn: expiryInMinutes * 60 });
+    return getSignedUrl(this.presignedUrlClient, command, { expiresIn: expiryInMinutes * 60 });
   }
 
   async uploadFileBuffer(key: string, type: string, buffer: Buffer): Promise<string> {

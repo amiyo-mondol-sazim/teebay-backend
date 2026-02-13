@@ -6,8 +6,8 @@ import type { EntityManager, IDatabaseDriver, Connection, MikroORM } from "@mikr
 import { faker } from "@faker-js/faker";
 import request from "supertest";
 
-import { EUserRole } from "@/common/enums/roles.enums";
 import { ERentalPeriod } from "@/common/enums/products.enums";
+import { EUserRole } from "@/common/enums/roles.enums";
 
 import { seedPermissionsData } from "../auth/auth.helpers";
 import { bootstrapTestServer } from "../utils/bootstrap";

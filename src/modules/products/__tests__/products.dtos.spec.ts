@@ -1,7 +1,9 @@
 import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
-import { CreateProductDto } from "../products.dtos";
+
 import { ERentalPeriod } from "@/common/enums/products.enums";
+
+import { CreateProductDto } from "../products.dtos";
 
 describe("CreateProductDto", () => {
   describe("imageUrl validation", () => {

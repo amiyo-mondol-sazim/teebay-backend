@@ -3,7 +3,10 @@ import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/com
 import type { EntityManager } from "@mikro-orm/postgresql";
 
 import type { Sale } from "@/common/entities/sales.entity";
+import { ENotificationType } from "@/common/enums/notifications.enums";
 import { EProductStatus } from "@/common/enums/products.enums";
+import { ChatGateway } from "@/modules/chat/chat.gateway";
+import { NotificationsService } from "@/modules/notifications/notifications.service";
 import { ProductsService } from "@/modules/products/products.service";
 import { RentsRepository } from "@/modules/rents/rents.repository";
 import { UsersService } from "@/modules/users/users.service";
@@ -26,6 +29,8 @@ export class SalesService {
     private readonly productsService: ProductsService,
     private readonly usersService: UsersService,
     private readonly rentsRepository: RentsRepository,
+    private readonly chatGateway: ChatGateway,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   buyProduct(dto: CreateSaleDto, buyerId: number) {
@@ -76,6 +81,20 @@ export class SalesService {
 
     tx.persist(sale);
     await tx.flush();
+
+    await this.notificationsService.createNotification(
+      product.owner.id,
+      ENotificationType.SALE_REQUEST,
+      "Product Sold!",
+      `Your "${product.title}" has been purchased by ${buyer.email} for $${product.purchasePrice}`,
+      sale.id,
+    );
+
+    this.chatGateway.sendNotification(product.owner.id, {
+      type: "SALE_REQUEST",
+      saleId: sale.id,
+      productTitle: product.title,
+    });
 
     return sale;
   }

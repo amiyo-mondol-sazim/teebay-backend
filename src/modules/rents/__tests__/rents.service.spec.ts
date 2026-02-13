@@ -7,6 +7,8 @@ import type { EntityManager } from "@mikro-orm/postgresql";
 import { mockDeep } from "vitest-mock-extended";
 
 import { EProductStatus } from "@/common/enums/products.enums";
+import { ChatGateway } from "@/modules/chat/chat.gateway";
+import { NotificationsService } from "@/modules/notifications/notifications.service";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
 import { acquireLock } from "@/utils/lock";
@@ -49,6 +51,8 @@ describe("RentsService", () => {
   const mockRentsRepository = mockDeep<RentsRepository>({ funcPropSupport: true });
   const mockProductsService = mockDeep<ProductsService>({ funcPropSupport: true });
   const mockUsersService = mockDeep<UsersService>({ funcPropSupport: true });
+  const mockChatGateway = mockDeep<ChatGateway>({ funcPropSupport: true });
+  const mockNotificationsService = mockDeep<NotificationsService>({ funcPropSupport: true });
 
   beforeEach(async () => {
     vi.mocked(acquireLock).mockResolvedValue(true);
@@ -68,6 +72,14 @@ describe("RentsService", () => {
         {
           provide: UsersService,
           useValue: mockUsersService,
+        },
+        {
+          provide: ChatGateway,
+          useValue: mockChatGateway,
+        },
+        {
+          provide: NotificationsService,
+          useValue: mockNotificationsService,
         },
       ],
     }).compile();

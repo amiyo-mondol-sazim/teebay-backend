@@ -8,6 +8,8 @@ import { mockDeep } from "vitest-mock-extended";
 
 import type { Rent } from "@/common/entities/rents.entity";
 import { EProductStatus } from "@/common/enums/products.enums";
+import { ChatGateway } from "@/modules/chat/chat.gateway";
+import { NotificationsService } from "@/modules/notifications/notifications.service";
 import { ProductsService } from "@/modules/products/products.service";
 import { RentsRepository } from "@/modules/rents/rents.repository";
 import { UsersService } from "@/modules/users/users.service";
@@ -49,6 +51,8 @@ describe("SalesService", () => {
   const mockProductsService = mockDeep<ProductsService>({ funcPropSupport: true });
   const mockUsersService = mockDeep<UsersService>({ funcPropSupport: true });
   const mockRentsRepository = mockDeep<RentsRepository>({ funcPropSupport: true });
+  const mockChatGateway = mockDeep<ChatGateway>({ funcPropSupport: true });
+  const mockNotificationsService = mockDeep<NotificationsService>({ funcPropSupport: true });
   const mockAcquireLock = vi.mocked(acquireLock);
 
   beforeEach(async () => {
@@ -70,6 +74,14 @@ describe("SalesService", () => {
         {
           provide: RentsRepository,
           useValue: mockRentsRepository,
+        },
+        {
+          provide: ChatGateway,
+          useValue: mockChatGateway,
+        },
+        {
+          provide: NotificationsService,
+          useValue: mockNotificationsService,
         },
       ],
     }).compile();

@@ -12,9 +12,13 @@ import { AppLoggerMiddleware } from "./common/middleware/request-logger.middlewa
 import { validate } from "./common/validators/env.validator";
 import ormConfig from "./db/db.config";
 import { AuthModule } from "./modules/auth/auth.module";
+import { ChatModule } from "./modules/chat/chat.module";
+import { ConversationsModule } from "./modules/conversations/conversations.module";
 import { EmailsModule } from "./modules/emails/emails.module";
 import { FileUploadsModule } from "./modules/file-uploads/file-uploads.module";
 import { HealthModule } from "./modules/health/health.module";
+import { MessagesModule } from "./modules/messages/messages.module";
+import { NotificationsModule } from "./modules/notifications/notifications.module";
 import { ProductsModule } from "./modules/products/products.module";
 import { RentsModule } from "./modules/rents/rents.module";
 import { RolesModule } from "./modules/roles/roles.module";
@@ -59,6 +63,10 @@ import { PermissionsModule } from "./permissions/permissions.module";
     HealthModule,
     VerificationRequestsModule,
     PermissionsModule,
+    ChatModule,
+    ConversationsModule,
+    MessagesModule,
+    NotificationsModule,
   ],
   controllers: [],
   providers: [Logger],
