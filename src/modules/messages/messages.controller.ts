@@ -16,7 +16,6 @@ import { ResponseTransformInterceptor } from "@/common/interceptors/response-tra
 import { CurrentUser } from "@/modules/auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 
-import { DEFAULT_MESSAGES_PAGE_SIZE } from "./messages.constants";
 import { CreateMessageDto, GetMessagesQueryDto } from "./messages.dtos";
 import { MessagesSerializer } from "./messages.serializer";
 import { MessagesService } from "./messages.service";
@@ -46,17 +45,11 @@ export class MessagesController {
 
   @Get()
   @ApiParam({ name: "conversationId", type: Number })
-  async getMessages(
+  getMessages(
     @Param("conversationId", ParseIntPipe) conversationId: number,
     @CurrentUser() currentUser: User,
     @Query() query: GetMessagesQueryDto,
   ): Promise<MessagesListResponse> {
-    const page = query.page || 1;
-    const limit = query.limit || DEFAULT_MESSAGES_PAGE_SIZE;
-    const result = await this.messagesService.getMessages(conversationId, currentUser.id, {
-      page,
-      limit,
-    });
-    return result;
+    return this.messagesService.getMessages(conversationId, currentUser.id, query);
   }
 }

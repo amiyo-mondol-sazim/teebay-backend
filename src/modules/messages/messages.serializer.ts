@@ -13,7 +13,7 @@ export class MessagesSerializer {
       sender: {
         id: message.sender.id,
         email: message.sender.email,
-        userProfile: message.sender.userProfile,
+        userProfile: message.sender.userProfile ?? undefined,
       },
       content: message.content,
       readAt: message.readAt,

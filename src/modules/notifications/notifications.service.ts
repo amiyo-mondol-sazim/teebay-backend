@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
 import type { Notification } from "@/common/entities/notifications.entity";
+import { User } from "@/common/entities/users.entity";
 import type { ENotificationType } from "@/common/enums/notifications.enums";
 
+import { DEFAULT_NOTIFICATIONS_PAGE_SIZE } from "./notifications.constants";
 import type { GetNotificationsQueryDto } from "./notifications.dtos";
 import { NotificationsRepository } from "./notifications.repository";
 import { NotificationsSerializer } from "./notifications.serializer";
@@ -23,25 +25,22 @@ export class NotificationsService {
     referenceId?: number,
   ): Promise<Notification> {
     const em = this.notificationsRepository.getEntityManager();
-    return em.transactional(async () => {
-      const notification = this.notificationsRepository.createOne({
-        user: { id: userId } as unknown as Notification["user"],
-        type,
-        title,
-        body,
-        referenceId,
-      });
-      await em.flush();
-      return notification;
+    const notification = this.notificationsRepository.createOne({
+      user: em.getReference(User, userId),
+      type,
+      title,
+      body,
+      referenceId,
     });
+    return em.flush().then(() => notification);
   }
 
   async getNotifications(
     userId: number,
     query: GetNotificationsQueryDto,
   ): Promise<NotificationsListResponse> {
-    const page = query.page || 1;
-    const limit = query.limit || 20;
+    const page = query.page ?? 1;
+    const limit = query.limit ?? DEFAULT_NOTIFICATIONS_PAGE_SIZE;
 
     const [notifications, totalCount] = await this.notificationsRepository.findByUser(
       userId,

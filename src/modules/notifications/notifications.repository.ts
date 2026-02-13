@@ -25,12 +25,13 @@ export class NotificationsRepository extends CustomSQLBaseRepository<Notificatio
     return this.count({ user: userId, readAt: null });
   }
 
-  markAsRead(notificationId: number, userId: number) {
-    return this.em
+  async markAsRead(notificationId: number, userId: number): Promise<boolean> {
+    const result = await this.em
       .createQueryBuilder(Notification)
       .update({ readAt: new Date() })
       .where({ id: notificationId, user: userId })
       .execute();
+    return (result.affectedRows ?? 0) > 0;
   }
 
   markAllAsRead(userId: number) {

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 
-import { Conversation } from "@/common/entities/conversations.entity";
+import type { Conversation } from "@/common/entities/conversations.entity";
 import type { Message } from "@/common/entities/messages.entity";
 import { ENotificationType } from "@/common/enums/notifications.enums";
 import { ChatGateway } from "@/modules/chat/chat.gateway";
@@ -10,6 +10,7 @@ import { UsersService } from "@/modules/users/users.service";
 import { ConversationsRepository } from "../conversations/conversations.repository";
 import { ConversationNotFoundError, MessageNotAllowedError } from "./messages.constants";
 import type { CreateMessageDto, GetMessagesQueryDto } from "./messages.dtos";
+import { NOTIFICATION_PREVIEW_LENGTH } from "./messages.dtos";
 import { MessagesRepository } from "./messages.repository";
 import { MessagesSerializer } from "./messages.serializer";
 import type { MessagesListResponse } from "./messages.types";
@@ -32,21 +33,7 @@ export class MessagesService {
   ): Promise<Message> {
     await this.usersService.findByIdOrThrow(senderId);
 
-    const conversationRepo = this.messagesRepository.getEntityManager().getRepository(Conversation);
-    const conversation = await conversationRepo.findOne(
-      { id: conversationId },
-      { populate: ["participant1", "participant2"] },
-    );
-
-    if (!conversation) {
-      throw new BadRequestException(ConversationNotFoundError);
-    }
-
-    const isParticipant =
-      conversation.participant1.id === senderId || conversation.participant2.id === senderId;
-    if (!isParticipant) {
-      throw new BadRequestException(MessageNotAllowedError);
-    }
+    const conversation = await this.validateConversationAccess(conversationId, senderId);
 
     const recipientId =
       conversation.participant1.id === senderId
@@ -54,8 +41,8 @@ export class MessagesService {
         : conversation.participant1.id;
 
     const em = this.messagesRepository.getEntityManager();
-    return em.transactional(async () => {
-      const message = this.messagesRepository.createOne({
+    const message = await em.transactional(async () => {
+      const msg = this.messagesRepository.createOne({
         conversation,
         sender: { id: senderId } as unknown as Message["sender"],
         content: dto.content,
@@ -68,28 +55,30 @@ export class MessagesService {
         recipientId,
         ENotificationType.MESSAGE,
         "New Message",
-        `You have a new message: ${dto.content.substring(0, 50)}${
-          dto.content.length > 50 ? "..." : ""
+        `You have a new message: ${dto.content.substring(0, NOTIFICATION_PREVIEW_LENGTH)}${
+          dto.content.length > NOTIFICATION_PREVIEW_LENGTH ? "..." : ""
         }`,
         conversationId,
       );
 
-      this.chatGateway.sendMessageToConversation(conversationId, {
-        id: message.id,
-        conversationId,
-        content: dto.content,
-        senderId,
-        createdAt: message.createdAt,
-      });
-
-      this.chatGateway.sendNotification(recipientId, {
-        type: "MESSAGE",
-        conversationId,
-        preview: dto.content.substring(0, 50),
-      });
-
-      return message;
+      return msg;
     });
+
+    this.chatGateway.sendMessageToConversation(conversationId, {
+      id: message.id,
+      conversationId,
+      content: dto.content,
+      senderId,
+      createdAt: message.createdAt,
+    });
+
+    this.chatGateway.sendNotification(recipientId, {
+      type: "MESSAGE",
+      conversationId,
+      preview: dto.content.substring(0, NOTIFICATION_PREVIEW_LENGTH),
+    });
+
+    return message;
   }
 
   async getMessages(
@@ -97,21 +86,10 @@ export class MessagesService {
     userId: number,
     query: GetMessagesQueryDto,
   ): Promise<MessagesListResponse> {
-    const conversationRepo = this.messagesRepository.getEntityManager().getRepository(Conversation);
-    const conversation = await conversationRepo.findOne({ id: conversationId });
+    await this.validateConversationAccess(conversationId, userId);
 
-    if (!conversation) {
-      throw new BadRequestException(ConversationNotFoundError);
-    }
-
-    const isParticipant =
-      conversation.participant1.id === userId || conversation.participant2.id === userId;
-    if (!isParticipant) {
-      throw new BadRequestException(MessageNotAllowedError);
-    }
-
-    const page = query.page || 1;
-    const limit = query.limit || 50;
+    const page = query.page;
+    const limit = query.limit;
 
     const [messages, totalCount] = await this.messagesRepository.findByConversation(
       conversationId,
@@ -134,5 +112,27 @@ export class MessagesService {
 
   async markMessagesAsRead(conversationId: number, userId: number): Promise<void> {
     await this.messagesRepository.markAsRead(conversationId, userId);
+  }
+
+  private async validateConversationAccess(
+    conversationId: number,
+    userId: number,
+  ): Promise<Conversation> {
+    const conversation = await this.conversationsRepository.findOne(
+      { id: conversationId },
+      { populate: ["participant1", "participant2"] },
+    );
+
+    if (!conversation) {
+      throw new BadRequestException(ConversationNotFoundError);
+    }
+
+    const isParticipant =
+      conversation.participant1.id === userId || conversation.participant2.id === userId;
+    if (!isParticipant) {
+      throw new BadRequestException(MessageNotAllowedError);
+    }
+
+    return conversation;
   }
 }
