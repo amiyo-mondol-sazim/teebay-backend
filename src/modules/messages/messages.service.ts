@@ -15,6 +15,7 @@ import {
   NOTIFICATION_PREVIEW_LENGTH,
 } from "./messages.constants";
 import type { CreateMessageDto, GetMessagesQueryDto } from "./messages.dtos";
+import { DEFAULT_PAGE_SIZE } from "./messages.dtos";
 import { MessagesRepository } from "./messages.repository";
 import { MessagesSerializer } from "./messages.serializer";
 import type { MessagesListResponse } from "./messages.types";
@@ -92,8 +93,8 @@ export class MessagesService {
   ): Promise<MessagesListResponse> {
     await this.validateConversationAccess(conversationId, userId);
 
-    const page = query.page;
-    const limit = query.limit;
+    const page = query.page ?? 1;
+    const limit = query.limit ?? DEFAULT_PAGE_SIZE;
 
     const [messages, totalCount] = await this.messagesRepository.findByConversation(
       conversationId,
