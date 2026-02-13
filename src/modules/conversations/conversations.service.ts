@@ -62,8 +62,8 @@ export class ConversationsService {
     const em = this.conversationsRepository.getEntityManager();
     const conversation = em.transactional(async () => {
       const conv = this.conversationsRepository.createOne({
-        participant1: { id: currentUserId } as unknown as Conversation["participant1"],
-        participant2: { id: dto.participantId } as unknown as Conversation["participant2"],
+        participant1: { id: currentUserId } as Conversation["participant1"],
+        participant2: { id: dto.participantId } as Conversation["participant2"],
         product: product ? product : undefined,
       });
       await em.flush();

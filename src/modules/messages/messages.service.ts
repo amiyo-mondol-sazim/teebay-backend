@@ -8,9 +8,13 @@ import { NotificationsService } from "@/modules/notifications/notifications.serv
 import { UsersService } from "@/modules/users/users.service";
 
 import { ConversationsRepository } from "../conversations/conversations.repository";
-import { ConversationNotFoundError, MessageNotAllowedError } from "./messages.constants";
+import {
+  ConversationNotFoundError,
+  MessageNotAllowedError,
+  NEW_MESSAGE_NOTIFICATION_TYPE,
+  NOTIFICATION_PREVIEW_LENGTH,
+} from "./messages.constants";
 import type { CreateMessageDto, GetMessagesQueryDto } from "./messages.dtos";
-import { NOTIFICATION_PREVIEW_LENGTH } from "./messages.dtos";
 import { MessagesRepository } from "./messages.repository";
 import { MessagesSerializer } from "./messages.serializer";
 import type { MessagesListResponse } from "./messages.types";
@@ -54,7 +58,7 @@ export class MessagesService {
       await this.notificationsService.createNotification(
         recipientId,
         ENotificationType.MESSAGE,
-        "New Message",
+        NEW_MESSAGE_NOTIFICATION_TYPE,
         `You have a new message: ${dto.content.substring(0, NOTIFICATION_PREVIEW_LENGTH)}${
           dto.content.length > NOTIFICATION_PREVIEW_LENGTH ? "..." : ""
         }`,

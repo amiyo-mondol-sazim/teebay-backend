@@ -7,17 +7,12 @@ import type { ENotificationType } from "@/common/enums/notifications.enums";
 import { DEFAULT_NOTIFICATIONS_PAGE_SIZE } from "./notifications.constants";
 import type { GetNotificationsQueryDto } from "./notifications.dtos";
 import { NotificationsRepository } from "./notifications.repository";
-import { NotificationsSerializer } from "./notifications.serializer";
-import type { NotificationsListResponse } from "./notifications.types";
 
 @Injectable()
 export class NotificationsService {
-  constructor(
-    private readonly notificationsRepository: NotificationsRepository,
-    private readonly notificationsSerializer: NotificationsSerializer,
-  ) {}
+  constructor(private readonly notificationsRepository: NotificationsRepository) {}
 
-  createNotification(
+  async createNotification(
     userId: number,
     type: ENotificationType,
     title: string,
@@ -32,33 +27,18 @@ export class NotificationsService {
       body,
       referenceId,
     });
-    return em.flush().then(() => notification);
+    await em.flush();
+    return notification;
   }
 
-  async getNotifications(
+  getNotifications(
     userId: number,
     query: GetNotificationsQueryDto,
-  ): Promise<NotificationsListResponse> {
+  ): Promise<[Notification[], number]> {
     const page = query.page ?? 1;
     const limit = query.limit ?? DEFAULT_NOTIFICATIONS_PAGE_SIZE;
 
-    const [notifications, totalCount] = await this.notificationsRepository.findByUser(
-      userId,
-      page,
-      limit,
-    );
-
-    return {
-      data: notifications.map((n) => this.notificationsSerializer.serialize(n)),
-      meta: {
-        currentPage: page,
-        itemsPerPage: limit,
-        totalItems: totalCount,
-        totalPages: Math.ceil(totalCount / limit),
-        hasNextPage: page * limit < totalCount,
-        hasPreviousPage: page > 1,
-      },
-    };
+    return this.notificationsRepository.findByUser(userId, page, limit);
   }
 
   getUnreadCount(userId: number): Promise<number> {
