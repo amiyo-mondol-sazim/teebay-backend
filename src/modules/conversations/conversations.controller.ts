@@ -16,7 +16,6 @@ import { ResponseTransformInterceptor } from "@/common/interceptors/response-tra
 import { CurrentUser } from "@/modules/auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 
-import { DEFAULT_CONVERSATIONS_PAGE_SIZE } from "./conversations.constants";
 import { CreateConversationDto, GetConversationsQueryDto } from "./conversations.dtos";
 import { ConversationsService } from "./conversations.service";
 import { type ConversationResponse, type ConversationsListResponse } from "./conversations.types";
@@ -42,9 +41,7 @@ export class ConversationsController {
     @CurrentUser() currentUser: User,
     @Query() query: GetConversationsQueryDto,
   ): Promise<ConversationsListResponse> {
-    const page = query.page || 1;
-    const limit = query.limit || DEFAULT_CONVERSATIONS_PAGE_SIZE;
-    return this.conversationsService.getConversations(currentUser.id, { page, limit });
+    return this.conversationsService.getConversations(currentUser.id, query);
   }
 
   @Get(":id")

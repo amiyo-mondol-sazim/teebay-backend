@@ -1,9 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+import { PaginatedResponse } from "@/common/dtos/pagination.dtos";
 import { User } from "@/common/entities/users.entity";
-
-import { PaginatedResponse } from "../../common/dtos/pagination.dtos";
-import { EProductStatus, ERentalPeriod } from "../../common/enums/products.enums";
+import { EProductStatus, ERentalPeriod } from "@/common/enums/products.enums";
 
 export class ProductResponse {
   @ApiProperty()

@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import type { PaginationMetadataResponse } from "@/common/dtos/pagination.dtos";
+import { PaginatedResponse } from "@/common/dtos/pagination.dtos";
 import { ENotificationType } from "@/common/enums/notifications.enums";
 
 export class NotificationResponse {
@@ -26,9 +26,8 @@ export class NotificationResponse {
   createdAt!: Date;
 }
 
-export class NotificationsListResponse {
+export class NotificationsListResponse extends PaginatedResponse {
   data!: NotificationResponse[];
-  meta!: PaginationMetadataResponse;
 }
 
 export class UnreadCountResponse {

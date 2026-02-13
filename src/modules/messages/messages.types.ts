@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-import type { PaginationMetadataResponse } from "@/common/dtos/pagination.dtos";
+import { PaginatedResponse } from "@/common/dtos/pagination.dtos";
 import { UserProfile } from "@/common/entities/user-profiles.entity";
 
 export class MessageSenderResponse {
@@ -34,7 +34,6 @@ export class MessageResponse {
   createdAt!: Date;
 }
 
-export class MessagesListResponse {
+export class MessagesListResponse extends PaginatedResponse {
   data!: MessageResponse[];
-  meta!: PaginationMetadataResponse;
 }

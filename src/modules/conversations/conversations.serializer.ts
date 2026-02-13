@@ -7,6 +7,10 @@ import type { ConversationResponse } from "./conversations.types";
 @Injectable()
 export class ConversationsSerializer {
   serialize(conversation: Conversation): ConversationResponse {
+    if (!conversation.participant1 || !conversation.participant2) {
+      throw new Error("Conversation participants not loaded");
+    }
+
     return {
       id: conversation.id,
       participant1: {

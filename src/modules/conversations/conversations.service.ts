@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 
 import type { Conversation } from "@/common/entities/conversations.entity";
 import { ProductsService } from "@/modules/products/products.service";
@@ -7,9 +12,14 @@ import { UsersService } from "@/modules/users/users.service";
 import {
   CANNOT_MESSAGE_SELF_ERROR,
   CONVERSATION_ALREADY_EXISTS_ERROR,
+  CONVERSATION_NOT_FOUND_ERROR,
+  DEFAULT_CONVERSATIONS_PAGE_SIZE,
+  NOT_PARTICIPANT_ERROR,
+  PRODUCT_OWNER_MISMATCH_ERROR,
 } from "./conversations.constants";
 import type { CreateConversationDto, GetConversationsQueryDto } from "./conversations.dtos";
 import { ConversationsRepository } from "./conversations.repository";
+import { ConversationsSerializer } from "./conversations.serializer";
 import type { ConversationResponse, ConversationsListResponse } from "./conversations.types";
 
 @Injectable()
@@ -18,6 +28,7 @@ export class ConversationsService {
     private readonly conversationsRepository: ConversationsRepository,
     private readonly usersService: UsersService,
     private readonly productsService: ProductsService,
+    private readonly conversationsSerializer: ConversationsSerializer,
   ) {}
 
   async createConversation(
@@ -34,7 +45,7 @@ export class ConversationsService {
     if (dto.productId) {
       product = await this.productsService.getOneById(dto.productId);
       if (product.owner.id !== dto.participantId) {
-        throw new BadRequestException("Product owner does not match the participant");
+        throw new BadRequestException(PRODUCT_OWNER_MISMATCH_ERROR);
       }
     }
 
@@ -59,15 +70,15 @@ export class ConversationsService {
       return conv;
     });
 
-    return conversation.then((conv) => this.toResponse(conv));
+    return conversation.then((conv) => this.conversationsSerializer.serialize(conv));
   }
 
   async getConversations(
     userId: number,
     query: GetConversationsQueryDto,
   ): Promise<ConversationsListResponse> {
-    const page = query.page || 1;
-    const limit = query.limit || 20;
+    const page = query.page ?? 1;
+    const limit = query.limit ?? DEFAULT_CONVERSATIONS_PAGE_SIZE;
 
     const [conversations, totalCount] = await this.conversationsRepository.findByParticipant(
       userId,
@@ -76,7 +87,7 @@ export class ConversationsService {
     );
 
     return {
-      data: conversations.map((c) => this.toResponse(c)),
+      data: conversations.map((c) => this.conversationsSerializer.serialize(c)),
       meta: {
         currentPage: page,
         itemsPerPage: limit,
@@ -95,14 +106,14 @@ export class ConversationsService {
     );
 
     if (!conversation) {
-      throw new BadRequestException("Conversation not found");
+      throw new NotFoundException(CONVERSATION_NOT_FOUND_ERROR);
     }
 
     if (conversation.participant1.id !== userId && conversation.participant2.id !== userId) {
-      throw new BadRequestException("You are not a participant in this conversation");
+      throw new ForbiddenException(NOT_PARTICIPANT_ERROR);
     }
 
-    return this.toResponse(conversation);
+    return this.conversationsSerializer.serialize(conversation);
   }
 
   async findOrCreateConversation(
@@ -130,37 +141,5 @@ export class ConversationsService {
       await em.flush();
       return conversation;
     });
-  }
-
-  private toResponse(conversation: Conversation): ConversationResponse {
-    return {
-      id: conversation.id,
-      participant1: {
-        id: conversation.participant1.id,
-        email: conversation.participant1.email,
-        userProfile: conversation.participant1.userProfile,
-      },
-      participant2: {
-        id: conversation.participant2.id,
-        email: conversation.participant2.email,
-        userProfile: conversation.participant2.userProfile,
-      },
-      product: conversation.product
-        ? {
-            id: conversation.product.id,
-            title: conversation.product.title,
-            description: conversation.product.description,
-            categories: conversation.product.categories,
-            purchasePrice: conversation.product.purchasePrice,
-            rentPrice: conversation.product.rentPrice,
-            rentalPeriod: conversation.product.rentalPeriod,
-            status: conversation.product.status,
-            viewCount: conversation.product.viewCount,
-            imageUrl: conversation.product.imageUrl,
-          }
-        : undefined,
-      lastMessageAt: conversation.lastMessageAt,
-      createdAt: conversation.createdAt,
-    };
   }
 }
