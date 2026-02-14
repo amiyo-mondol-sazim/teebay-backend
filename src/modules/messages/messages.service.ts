@@ -49,7 +49,7 @@ export class MessagesService {
     const message = await em.transactional(async () => {
       const msg = this.messagesRepository.createOne({
         conversation,
-        sender: { id: senderId } as unknown as Message["sender"],
+        sender: { id: senderId } as Message["sender"],
         content: dto.content,
       });
       await em.flush();

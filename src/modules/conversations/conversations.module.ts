@@ -1,5 +1,9 @@
 import { Module } from "@nestjs/common";
 
+import { MikroOrmModule } from "@mikro-orm/nestjs";
+import { EntityManager } from "@mikro-orm/postgresql";
+
+import { Conversation } from "@/common/entities/conversations.entity";
 import { ProductsModule } from "@/modules/products/products.module";
 import { UsersModule } from "@/modules/users/users.module";
 
@@ -9,9 +13,17 @@ import { ConversationsSerializer } from "./conversations.serializer";
 import { ConversationsService } from "./conversations.service";
 
 @Module({
-  imports: [UsersModule, ProductsModule],
+  imports: [MikroOrmModule.forFeature([Conversation]), UsersModule, ProductsModule],
   controllers: [ConversationsController],
-  providers: [ConversationsRepository, ConversationsService, ConversationsSerializer],
+  providers: [
+    {
+      provide: ConversationsRepository,
+      useFactory: (em: EntityManager) => new ConversationsRepository(em, Conversation),
+      inject: [EntityManager],
+    },
+    ConversationsService,
+    ConversationsSerializer,
+  ],
   exports: [ConversationsRepository, ConversationsService, ConversationsSerializer],
 })
 export class ConversationsModule {}
