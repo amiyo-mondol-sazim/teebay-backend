@@ -9,7 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiParam } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -21,6 +21,7 @@ import { MessagesSerializer } from "./messages.serializer";
 import { MessagesService } from "./messages.service";
 import { type MessageResponse, type MessagesListResponse } from "./messages.types";
 
+@ApiTags("Messages")
 @ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
 @UseGuards(JwtAuthGuard)
@@ -31,9 +32,10 @@ export class MessagesController {
     private readonly messagesSerializer: MessagesSerializer,
   ) {}
 
+  @ApiOperation({ summary: "Send a message in a conversation" })
+  @ApiParam({ name: "conversationId", type: Number, description: "Conversation ID" })
   @ApiBody({ type: CreateMessageDto })
   @Post()
-  @ApiParam({ name: "conversationId", type: Number })
   async createMessage(
     @Param("conversationId", ParseIntPipe) conversationId: number,
     @Body() dto: CreateMessageDto,
@@ -43,8 +45,9 @@ export class MessagesController {
     return this.messagesSerializer.serialize(message);
   }
 
+  @ApiOperation({ summary: "Get all messages in a conversation" })
+  @ApiParam({ name: "conversationId", type: Number, description: "Conversation ID" })
   @Get()
-  @ApiParam({ name: "conversationId", type: Number })
   getMessages(
     @Param("conversationId", ParseIntPipe) conversationId: number,
     @CurrentUser() currentUser: User,

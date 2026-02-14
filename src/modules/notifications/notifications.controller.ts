@@ -8,7 +8,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiParam, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -34,6 +34,9 @@ export class NotificationsController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: "Get all notifications for current user" })
+  @ApiQuery({ name: "page", required: false, type: Number, description: "Page number" })
+  @ApiQuery({ name: "limit", required: false, type: Number, description: "Items per page" })
   async getNotifications(
     @CurrentUser() currentUser: User,
     @Query() query: GetNotificationsQueryDto,
@@ -59,12 +62,14 @@ export class NotificationsController {
   }
 
   @Get("unread-count")
+  @ApiOperation({ summary: "Get count of unread notifications" })
   async getUnreadCount(@CurrentUser() currentUser: User): Promise<UnreadCountResponse> {
     const count = await this.notificationsService.getUnreadCount(currentUser.id);
     return { count };
   }
 
   @Patch(":id/read")
+  @ApiOperation({ summary: "Mark a single notification as read" })
   @ApiParam({ name: "id", type: Number })
   async markAsRead(
     @Param("id", ParseIntPipe) id: number,
@@ -74,6 +79,7 @@ export class NotificationsController {
   }
 
   @Patch("read-all")
+  @ApiOperation({ summary: "Mark all notifications as read" })
   async markAllAsRead(@CurrentUser() currentUser: User): Promise<void> {
     await this.notificationsService.markAllAsRead(currentUser.id);
   }

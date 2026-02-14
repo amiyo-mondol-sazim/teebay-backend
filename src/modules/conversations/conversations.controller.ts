@@ -9,7 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
@@ -20,6 +20,7 @@ import { CreateConversationDto, GetConversationsQueryDto } from "./conversations
 import { ConversationsService } from "./conversations.service";
 import { type ConversationResponse, type ConversationsListResponse } from "./conversations.types";
 
+@ApiTags("Conversations")
 @ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
 @UseGuards(JwtAuthGuard)
@@ -27,6 +28,7 @@ import { type ConversationResponse, type ConversationsListResponse } from "./con
 export class ConversationsController {
   constructor(private readonly conversationsService: ConversationsService) {}
 
+  @ApiOperation({ summary: "Create a new conversation" })
   @ApiBody({ type: CreateConversationDto })
   @Post()
   createConversation(
@@ -36,6 +38,7 @@ export class ConversationsController {
     return this.conversationsService.createConversation(dto, currentUser.id);
   }
 
+  @ApiOperation({ summary: "Get all conversations for current user" })
   @Get()
   getConversations(
     @CurrentUser() currentUser: User,
@@ -44,6 +47,8 @@ export class ConversationsController {
     return this.conversationsService.getConversations(currentUser.id, query);
   }
 
+  @ApiOperation({ summary: "Get a conversation by ID" })
+  @ApiParam({ name: "id", type: Number, description: "Conversation ID" })
   @Get(":id")
   getConversation(
     @Param("id", ParseIntPipe) id: number,

@@ -11,10 +11,9 @@ import {
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiQuery } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from "@nestjs/swagger";
 
 import { User } from "@/common/entities/users.entity";
-import { EProductStatus } from "@/common/enums/products.enums";
 import { ResponseTransformInterceptor } from "@/common/interceptors/response-transform.interceptor";
 import { CurrentUser } from "@/modules/auth/decorators/current-user.decorator";
 import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
@@ -26,6 +25,7 @@ import { ProductsSerializer } from "./products.serializer";
 import { ProductsService } from "./products.service";
 import type { ProductFilters, ProductResponse, ProductsListResponse } from "./products.types";
 
+@ApiTags("Products")
 @ApiBearerAuth()
 @UseInterceptors(ResponseTransformInterceptor)
 @UseGuards(JwtAuthGuard)
@@ -36,15 +36,8 @@ export class ProductsController {
     private readonly productsSerializer: ProductsSerializer,
   ) {}
 
+  @ApiOperation({ summary: "Get all products with filters" })
   @Get()
-  @ApiQuery({ name: "page", required: false, type: Number })
-  @ApiQuery({ name: "limit", required: false, type: Number })
-  @ApiQuery({ name: "status", required: false, enum: EProductStatus, enumName: "EProductStatus" })
-  @ApiQuery({ name: "minPurchasePrice", required: false, type: Number })
-  @ApiQuery({ name: "maxPurchasePrice", required: false, type: Number })
-  @ApiQuery({ name: "minRentPrice", required: false, type: Number })
-  @ApiQuery({ name: "maxRentPrice", required: false, type: Number })
-  @ApiQuery({ name: "categories", required: false, type: String })
   async getAll(
     @Query() queryDto: GetProductsQueryDto,
     @CurrentUser() currentUser: User,
@@ -82,6 +75,8 @@ export class ProductsController {
     };
   }
 
+  @ApiOperation({ summary: "Get products by owner ID" })
+  @ApiParam({ name: "ownerId", type: Number, description: "Owner user ID" })
   @Get("owner/:ownerId")
   async getByOwner(
     @Param("ownerId", ParseIntPipe) ownerId: number,
@@ -100,12 +95,15 @@ export class ProductsController {
     };
   }
 
+  @ApiOperation({ summary: "Get a product by ID" })
+  @ApiParam({ name: "id", type: Number, description: "Product ID" })
   @Get(":id")
   async getOneById(@Param("id", ParseIntPipe) id: number): Promise<ProductResponse> {
     const product = await this.productsService.getOneById(id);
     return this.productsSerializer.serialize(product);
   }
 
+  @ApiOperation({ summary: "Create a new product" })
   @ApiBody({ type: CreateProductDto })
   @Post()
   async create(
@@ -116,6 +114,8 @@ export class ProductsController {
     return this.productsSerializer.serialize(product);
   }
 
+  @ApiOperation({ summary: "Update a product" })
+  @ApiParam({ name: "id", type: Number, description: "Product ID" })
   @ApiBody({ type: UpdateProductDto })
   @Patch(":id")
   async update(
@@ -127,6 +127,8 @@ export class ProductsController {
     return this.productsSerializer.serialize(product);
   }
 
+  @ApiOperation({ summary: "Delete a product" })
+  @ApiParam({ name: "id", type: Number, description: "Product ID" })
   @Delete(":id")
   async delete(
     @Param("id", ParseIntPipe) id: number,
@@ -135,6 +137,8 @@ export class ProductsController {
     await this.productsService.deleteOne(id, currentUser.id);
   }
 
+  @ApiOperation({ summary: "Increment product view count" })
+  @ApiParam({ name: "id", type: Number, description: "Product ID" })
   @Patch(":id/views")
   async incrementViews(@Param("id", ParseIntPipe) id: number): Promise<ProductResponse> {
     const product = await this.productsService.incrementViews(id);
