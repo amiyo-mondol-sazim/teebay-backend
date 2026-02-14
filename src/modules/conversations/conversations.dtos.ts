@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+import { Type } from "class-transformer";
 import { IsInt, IsOptional, Max, Min } from "class-validator";
 
 import {
@@ -21,8 +22,9 @@ export class CreateConversationDto {
 export class GetConversationsQueryDto {
   @ApiProperty({ required: false, default: 1 })
   @IsOptional()
-  @Min(1)
+  @Type(() => Number)
   @IsInt()
+  @Min(1)
   page?: number = 1;
 
   @ApiProperty({
@@ -31,8 +33,9 @@ export class GetConversationsQueryDto {
     maximum: MAX_CONVERSATIONS_PAGE_SIZE,
   })
   @IsOptional()
+  @Type(() => Number)
+  @IsInt()
   @Min(1)
   @Max(MAX_CONVERSATIONS_PAGE_SIZE)
-  @IsInt()
   limit?: number = DEFAULT_CONVERSATIONS_PAGE_SIZE;
 }
