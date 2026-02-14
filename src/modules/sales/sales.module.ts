@@ -1,4 +1,5 @@
 import { Module } from "@nestjs/common";
+import { JwtModule } from "@nestjs/jwt";
 
 import { MikroOrmModule } from "@mikro-orm/nestjs";
 
@@ -20,6 +21,9 @@ import { SalesService } from "./sales.service";
     ProductsModule,
     UsersModule,
     NotificationsModule,
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+    }),
   ],
   controllers: [SalesController],
   providers: [SalesService, SalesSerializer, ChatGateway],
