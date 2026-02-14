@@ -46,7 +46,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.data.email = payload.email;
 
       this.userSockets.set(payload.sub, client.id);
-
     } catch (error) {
       console.error("WebSocket authentication error:", error);
       client.disconnect();
