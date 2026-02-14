@@ -19,8 +19,8 @@ export class NotificationResponse {
   @ApiProperty()
   body!: string;
 
-  @ApiProperty({ required: false })
-  readAt?: Date;
+  @ApiProperty({ required: false, nullable: true })
+  readAt?: Date | null;
 
   @ApiProperty()
   createdAt!: Date;

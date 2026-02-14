@@ -34,8 +34,8 @@ export class NotificationsRepository extends CustomSQLBaseRepository<Notificatio
     return (result.affectedRows ?? 0) > 0;
   }
 
-  markAllAsRead(userId: number) {
-    return this.em
+  async markAllAsRead(userId: number): Promise<void> {
+    await this.em
       .createQueryBuilder(Notification)
       .update({ readAt: new Date() })
       .where({ user: userId, readAt: null })

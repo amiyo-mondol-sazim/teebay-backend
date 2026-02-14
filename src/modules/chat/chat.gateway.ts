@@ -47,7 +47,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
       this.userSockets.set(payload.sub, client.id);
 
-      console.log(`User ${payload.sub} connected with socket ID: ${client.id}`);
     } catch (error) {
       console.error("WebSocket authentication error:", error);
       client.disconnect();
@@ -57,7 +56,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleDisconnect(client: Socket) {
     if (client.data.userId) {
       this.userSockets.delete(client.data.userId);
-      console.log(`User ${client.data.userId} disconnected`);
     }
   }
 

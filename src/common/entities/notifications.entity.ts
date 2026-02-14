@@ -36,5 +36,5 @@ export class Notification extends CustomBaseEntity {
   body!: string;
 
   @Property({ fieldName: "read_at", nullable: true })
-  readAt?: Date;
+  readAt!: Date | null;
 }

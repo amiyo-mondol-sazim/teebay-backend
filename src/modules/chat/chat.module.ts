@@ -12,7 +12,7 @@ import { ChatService } from "./chat.service";
     ConversationsModule,
     NotificationsModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET || "default-secret",
+      secret: process.env.JWT_SECRET,
     }),
   ],
   providers: [ChatGateway, ChatService],
