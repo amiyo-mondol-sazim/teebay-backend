@@ -100,7 +100,7 @@ export class MessagesService {
     );
 
     return {
-      data: messages.map((m) => this.messagesSerializer.serialize(m)),
+      data: messages.reverse().map((m) => this.messagesSerializer.serialize(m)),
       meta: {
         currentPage: page,
         itemsPerPage: limit,
