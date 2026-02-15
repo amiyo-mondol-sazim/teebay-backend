@@ -69,13 +69,10 @@ export class MessagesService {
       return msg;
     });
 
-    this.chatGateway.sendMessageToConversation(conversationId, {
-      id: message.id,
+    this.chatGateway.sendMessageToConversation(
       conversationId,
-      content: dto.content,
-      senderId,
-      createdAt: message.createdAt,
-    });
+      this.messagesSerializer.serialize(message),
+    );
 
     this.chatGateway.sendNotification(recipientId, {
       type: "MESSAGE",

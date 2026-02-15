@@ -27,7 +27,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   constructor(private readonly jwtService: JwtService) {}
 
   afterInit() {
-    console.log("WebSocket Gateway initialized");
+    console.log("ChatGateway initialized with namespace /chat");
   }
 
   handleConnection(client: Socket) {
