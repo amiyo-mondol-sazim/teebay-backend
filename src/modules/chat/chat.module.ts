@@ -1,4 +1,4 @@
-import { Module, Global } from "@nestjs/common";
+import { Module, Global, forwardRef } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 
 import { ConversationsModule } from "../conversations/conversations.module";
@@ -10,7 +10,7 @@ import { ChatService } from "./chat.service";
 @Module({
   imports: [
     ConversationsModule,
-    NotificationsModule,
+    forwardRef(() => NotificationsModule),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
     }),

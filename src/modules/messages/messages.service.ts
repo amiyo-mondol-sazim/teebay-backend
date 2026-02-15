@@ -74,12 +74,6 @@ export class MessagesService {
       this.messagesSerializer.serialize(message),
     );
 
-    this.chatGateway.sendNotification(recipientId, {
-      type: "MESSAGE",
-      conversationId,
-      preview: dto.content.substring(0, NOTIFICATION_PREVIEW_LENGTH),
-    });
-
     return message;
   }
 

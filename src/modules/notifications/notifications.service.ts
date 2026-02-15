@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import type { Notification } from "@/common/entities/notifications.entity";
 import { User } from "@/common/entities/users.entity";
 import type { ENotificationType } from "@/common/enums/notifications.enums";
+import { ChatGateway } from "@/modules/chat/chat.gateway";
 
 import { DEFAULT_NOTIFICATIONS_PAGE_SIZE } from "./notifications.constants";
 import type { GetNotificationsQueryDto } from "./notifications.dtos";
@@ -10,7 +11,10 @@ import { NotificationsRepository } from "./notifications.repository";
 
 @Injectable()
 export class NotificationsService {
-  constructor(private readonly notificationsRepository: NotificationsRepository) {}
+  constructor(
+    private readonly notificationsRepository: NotificationsRepository,
+    private readonly chatGateway: ChatGateway,
+  ) {}
 
   async createNotification(
     userId: number,
@@ -28,6 +32,16 @@ export class NotificationsService {
       referenceId,
     });
     await em.flush();
+
+    this.chatGateway.sendNotification(userId, {
+      id: notification.id,
+      type: notification.type,
+      title: notification.title,
+      body: notification.body,
+      referenceId: notification.referenceId,
+      createdAt: notification.createdAt,
+    });
+
     return notification;
   }
 

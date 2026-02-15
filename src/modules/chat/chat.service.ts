@@ -32,11 +32,5 @@ export class ChatService {
       `You have a new message: ${content.substring(0, 50)}${content.length > 50 ? "..." : ""}`,
       conversationId,
     );
-
-    this.chatGateway.sendNotification(recipientId, {
-      type: "MESSAGE",
-      conversationId,
-      preview: content.substring(0, 50),
-    });
   }
 }

@@ -4,7 +4,6 @@ import type { EntityManager } from "@mikro-orm/postgresql";
 
 import { ENotificationType } from "@/common/enums/notifications.enums";
 import { EProductStatus } from "@/common/enums/products.enums";
-import { ChatGateway } from "@/modules/chat/chat.gateway";
 import { NotificationsService } from "@/modules/notifications/notifications.service";
 import { ProductsService } from "@/modules/products/products.service";
 import { UsersService } from "@/modules/users/users.service";
@@ -29,7 +28,6 @@ export class RentsService {
     private readonly rentsRepository: RentsRepository,
     private readonly productsService: ProductsService,
     private readonly usersService: UsersService,
-    private readonly chatGateway: ChatGateway,
     private readonly notificationsService: NotificationsService,
   ) {}
 
@@ -104,16 +102,10 @@ export class RentsService {
     await this.notificationsService.createNotification(
       product.owner.id,
       ENotificationType.RENT_REQUEST,
-      "New Rental Request",
-      `User ${renter.email} wants to rent your "${product.title}"`,
-      rent.id,
+      "New Rental",
+      `User ${renter.email} rented your "${product.title}"`,
+      rent.product.id,
     );
-
-    this.chatGateway.sendNotification(product.owner.id, {
-      type: "RENT_REQUEST",
-      rentId: rent.id,
-      productTitle: product.title,
-    });
 
     return rent;
   }

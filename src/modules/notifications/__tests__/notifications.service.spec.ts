@@ -16,16 +16,25 @@ import {
   createMockEntityManager,
 } from "./notifications.mocks";
 
+vi.mock("@/modules/chat/chat.gateway", () => ({
+  ChatGateway: class {
+    sendNotification = vi.fn();
+  },
+}));
+
 describe("NotificationsService", () => {
   let service: NotificationsService;
 
   const mockRepository = mockDeep<NotificationsRepository>({ funcPropSupport: true });
 
   beforeEach(async () => {
+    const { ChatGateway } = await import("@/modules/chat/chat.gateway");
+
     const module = await Test.createTestingModule({
       providers: [
         NotificationsService,
         { provide: NotificationsRepository, useValue: mockRepository },
+        { provide: ChatGateway, useValue: { sendNotification: vi.fn() } },
       ],
     }).compile();
 
