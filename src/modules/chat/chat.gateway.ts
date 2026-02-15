@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import type { OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from "@nestjs/websockets";
+import type { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit } from "@nestjs/websockets";
 import {
   ConnectedSocket,
   MessageBody,
@@ -10,6 +10,8 @@ import {
 } from "@nestjs/websockets";
 
 import { Server, Socket } from "socket.io";
+
+import type { Notification } from "@/common/entities/notifications.entity";
 
 @WebSocketGateway({
   cors: {
@@ -82,7 +84,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.to(`conversation:${conversationId}`).emit("newMessage", message);
   }
 
-  sendNotification(userId: number, notification: unknown) {
+  sendNotification(userId: number, notification: Notification) {
     const socketId = this.userSockets.get(userId);
     if (socketId) {
       this.server.to(socketId).emit("notification", notification);

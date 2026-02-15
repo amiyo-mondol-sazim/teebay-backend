@@ -40,6 +40,9 @@ export class NotificationsService {
       body: notification.body,
       referenceId: notification.referenceId,
       createdAt: notification.createdAt,
+      readAt: notification.readAt,
+      updatedAt: notification.updatedAt,
+      user: notification.user,
     });
 
     return notification;
